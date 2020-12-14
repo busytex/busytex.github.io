@@ -18,8 +18,8 @@
 
 
 
-  <link crossorigin="anonymous" media="all" integrity="sha512-iNnUjxnDZbx2GqneSSzGFrvmlaN/BjrGF5q/p8z9Fa0/c+MsD+geqNbi5m2pBphVcQ4hV3yIWFLvyreiyDwvkQ==" rel="stylesheet" href="https://github.githubassets.com/assets/frameworks-color-modes-88d9d48f19c365bc761aa9de492cc616.css" />
-  <link crossorigin="anonymous" media="all" integrity="sha512-9EHFZuxUs/24baBIkYdAVVliLIVblalN0qHdm61iNG1xeGZsMO3hu3EpjA+eE4ec0WhCi+ciWVpXAVOliqke6w==" rel="stylesheet" href="https://github.githubassets.com/assets/site-f441c566ec54b3fdb86da04891874055.css" />
+  <link crossorigin="anonymous" media="all" integrity="sha512-JAYW/5ReZVW/t4LQKcWixDD5nn/o0KV2p+VV2bD+l4QYPT4AJJ7QwRJ5P3D0HKbeYiO+bYd47C/R89NRPWZEmg==" rel="stylesheet" href="https://github.githubassets.com/assets/frameworks-240616ff945e6555bfb782d029c5a2c4.css" />
+  <link crossorigin="anonymous" media="all" integrity="sha512-scFDZe448CxSyU/lIv2tIGkZrC5tHP7VnhnLzomClNn7Qqf4TcWlNCVFzMjbhvsT7Z5dU6d5ORYucxJd0ZJmlA==" rel="stylesheet" href="https://github.githubassets.com/assets/site-b1c14365ee38f02c52c94fe522fdad20.css" />
     <link crossorigin="anonymous" media="all" integrity="sha512-mc6hEEpfziX1pFkhVTe0/gECILFQEIGxlwy2h/7wSY0xw8L2vmJbxNO6pDvHHHQt9Gt0eXBeli9mz2RXQ4xtjA==" rel="stylesheet" href="https://github.githubassets.com/assets/github-99cea1104a5fce25f5a459215537b4fe.css" />
     
     
@@ -27,23 +27,23 @@
     
 
   <script crossorigin="anonymous" defer="defer" integrity="sha512-8K2vvwbW+6H27Nad5ydg8PA2/aMD/LKq+EiK9s0U0hhVZxCI2tWBsYk9beAtisRw2j+Or5k2/F+6dk02nmj/PA==" type="application/javascript" src="https://github.githubassets.com/assets/environment-f0adafbf.js"></script>
-    <script crossorigin="anonymous" defer="defer" integrity="sha512-V5a+KjQWDz9RjW/GgiE8Z1RZRzGNgAsiKN5KkwF6KKwua7KhL6cQZXaHSPJeX12cmNGEFVMT1C9fRLhtQdkOKA==" type="application/javascript" src="https://github.githubassets.com/assets/chunk-frameworks-5796be2a.js"></script>
-    <script crossorigin="anonymous" defer="defer" integrity="sha512-fifeLCDzeD/nCXw8oPU2CKwv5FZBJPALvJsX89Kh5ENx/lxl+svFDWk0BjvIgtPZGuP6v76INtuILnrurUiNsw==" type="application/javascript" src="https://github.githubassets.com/assets/chunk-vendor-7e27de2c.js"></script>
+    <script crossorigin="anonymous" defer="defer" integrity="sha512-D5gL7XVorCOOEB84swOppxlkAAjZcKVgz9JWqs1XDn/o2z0FLimQNbP+JNQL0JcQ3w0PW3TzLFGbtgdgxzfKyw==" type="application/javascript" src="https://github.githubassets.com/assets/chunk-frameworks-0f980bed.js"></script>
+    <script crossorigin="anonymous" defer="defer" integrity="sha512-LZ+NweFsWGEcaqapNXdTBz35Z5vuPqSaHFRPoHRzHzgDD8Ycl+MDLrPMldIDzNlTJTDsf7swjPT/vbtZFceO0w==" type="application/javascript" src="https://github.githubassets.com/assets/chunk-vendor-2d9f8dc1.js"></script>
   
-  <script crossorigin="anonymous" defer="defer" integrity="sha512-2aDbL+nF5yjZcSmZr6UKuUWC4Ax82p48CUa4MDkqKquI0HpYLG1MfC1+TcIQ2+KVrLPZIcX1liy9T4no4JrzWg==" type="application/javascript" src="https://github.githubassets.com/assets/behaviors-d9a0db2f.js"></script>
+  <script crossorigin="anonymous" defer="defer" integrity="sha512-71C/feRG9/WxsKMNpgv2PkjchS2zhIo07MsQ1CW9AQo18IHnMysOmDJ8cjoNwLTY0LP5rp1z/n4OilwOP2JlHw==" type="application/javascript" src="https://github.githubassets.com/assets/behaviors-ef50bf7d.js"></script>
   
     <script crossorigin="anonymous" defer="defer" integrity="sha512-F/8sNCLF603gJL0egQeZwFTYP9dfZAVEWHdjMssZ2opLZXRK08vgowBRzKyra6u9zU/rGVxe+igfJsSWzfO2lg==" type="application/javascript" data-module-id="./chunk-contributions-spider-graph.js" data-src="https://github.githubassets.com/assets/chunk-contributions-spider-graph-17ff2c34.js"></script>
     <script crossorigin="anonymous" defer="defer" integrity="sha512-obMR8mPKx8OvqRe34LgnUcxeJ1qujiA4ND3H6UX13ExMlA/WfHLjEzXRmgGRcRvN/8J1nzc+Z+jgz/PLTFy6zg==" type="application/javascript" data-module-id="./chunk-drag-drop.js" data-src="https://github.githubassets.com/assets/chunk-drag-drop-a1b311f2.js"></script>
     <script crossorigin="anonymous" defer="defer" integrity="sha512-WbOQwEsCWZv8f5XFkZXTbIqwSQf/UYCko50dzfolA70Ju4phNcCWm+63IrOtuZyMppTzLI6inSoZ6z3Ox7UyDw==" type="application/javascript" data-module-id="./chunk-jump-to.js" data-src="https://github.githubassets.com/assets/chunk-jump-to-59b390c0.js"></script>
     <script crossorigin="anonymous" defer="defer" integrity="sha512-biWH4OAQPiDiTkaeyDnXf6hHF3u3Mv3eaDEvt8AdT/QvWDpLbnusALT4ZO+f+DgYp07UiHxNRAB6/J7IwPW6TQ==" type="application/javascript" data-module-id="./chunk-lib.dev.js" data-src="https://github.githubassets.com/assets/chunk-lib.dev-6e2587e0.js"></script>
     <script crossorigin="anonymous" defer="defer" integrity="sha512-tcH4xCRuMBAh1PruDaiwGnRIbHlF6bGLhxyCQ16uqok1cV5QFMguVPWJtN9KI0jGQOgN+Pha3+uOUXhXdfK/qw==" type="application/javascript" data-module-id="./chunk-profile-pins-element.js" data-src="https://github.githubassets.com/assets/chunk-profile-pins-element-b5c1f8c4.js"></script>
-    <script crossorigin="anonymous" defer="defer" integrity="sha512-gPx3bYhTjyC83X5u5KlEDJpwGAHt3AC2p5s9iMuAfPTeSj7kHlKMW231C3K3c7+jvlpWpELk8DJsefrYdRzqjA==" type="application/javascript" data-module-id="./chunk-randomColor.js" data-src="https://github.githubassets.com/assets/chunk-randomColor-80fc776d.js"></script>
+    <script crossorigin="anonymous" defer="defer" integrity="sha512-IU7O8Us8T5e3D9TQfqc4Zyik4pAMxXbFk8DV/1pNjvkHbmZ6dHBLJqad+2tRN4hPkx4D3TPqf+0saaVkaCRdZQ==" type="application/javascript" data-module-id="./chunk-randomColor.js" data-src="https://github.githubassets.com/assets/chunk-randomColor-214ecef1.js"></script>
     <script crossorigin="anonymous" defer="defer" integrity="sha512-E+H+wAtjiqutBvn2cnXzDIvmasIhYiS7i7JzOfFUwo+Ej8zT54OrJtP//RhwixnypgOpCF4JvqzYy6zOtORDmg==" type="application/javascript" data-module-id="./chunk-runner-groups.js" data-src="https://github.githubassets.com/assets/chunk-runner-groups-13e1fec0.js"></script>
-    <script crossorigin="anonymous" defer="defer" integrity="sha512-qdiCkJPPR4LxwUKftEmJe2v79E8xnTceYqylsWkMsGuARkiKkX9iFNwkvZJ3bDfS5YHSPD3+k+N2/I73tvlL1Q==" type="application/javascript" data-module-id="./chunk-sortable-behavior.js" data-src="https://github.githubassets.com/assets/chunk-sortable-behavior-a9d88290.js"></script>
-    <script crossorigin="anonymous" defer="defer" integrity="sha512-NpURjBPyJ0JT8hWOMbLErYNeb0bTkKfmFX1hl1F8C/q6jckqWObeOzEAcs6TRlj+cqAR6GDohEBxDgkYBlx+QQ==" type="application/javascript" data-module-id="./chunk-tweetsodium.js" data-src="https://github.githubassets.com/assets/chunk-tweetsodium-3695118c.js"></script>
+    <script crossorigin="anonymous" defer="defer" integrity="sha512-IHHeXuT59anKKPcbu07VYnX2ODOm6gh7t2EmyYiYx1jzKK6VL75x85ujlMaBZVgH9IUM9UZqEwoNY3X3JZpIWg==" type="application/javascript" data-module-id="./chunk-sortable-behavior.js" data-src="https://github.githubassets.com/assets/chunk-sortable-behavior-2071de5e.js"></script>
+    <script crossorigin="anonymous" defer="defer" integrity="sha512-SDwMlGAfopXbPvXLBx4hmZpexoapsvsL8BaOrZXccJkkm3P5CyRfIaXh1wFI8s6NMvJDNpKbbrY2eaRWdR3YPQ==" type="application/javascript" data-module-id="./chunk-tweetsodium.js" data-src="https://github.githubassets.com/assets/chunk-tweetsodium-483c0c94.js"></script>
     <script crossorigin="anonymous" defer="defer" integrity="sha512-QUtHMb3mxbE2DQSQZb9+tK8ZC2m05FFqZOa5ju2Sj0GdiQV+ce/bnIK/YwoMdty44NEhEIkZUIyh9DqLMsRedg==" type="application/javascript" data-module-id="./chunk-user-status-submit.js" data-src="https://github.githubassets.com/assets/chunk-user-status-submit-414b4731.js"></script>
   
-  <script crossorigin="anonymous" defer="defer" integrity="sha512-o3NCSVrjA+WTbZcR4Pdrgg17Qp42LjwG3+ekuZnEHp6/25dqTokhfGsZPbuhUrmipNM+bepSOs55WVbvXtj7Mg==" type="application/javascript" src="https://github.githubassets.com/assets/repositories-a3734249.js"></script>
+  <script crossorigin="anonymous" defer="defer" integrity="sha512-LfAem6hdoNjUC3fDCDc908uMIWD9/iBxwFauo8ymiSSAPoEHJC7qYqVfRViyqtL0dXtXhAiVp7f1jULdFV01bw==" type="application/javascript" src="https://github.githubassets.com/assets/repositories-2df01e9b.js"></script>
 
   <meta name="viewport" content="width=device-width">
   
@@ -63,7 +63,7 @@
   <link rel="assets" href="https://github.githubassets.com/">
   
 
-  <meta name="request-id" content="07C5:385D:1D73404:2A167B7:5FD7DB42" data-pjax-transient="true"/><meta name="html-safe-nonce" content="d16b51717a0357ac421ab834abdd87be2729eb4023fdca5806ccfac8b047fac3" data-pjax-transient="true"/><meta name="visitor-payload" content="eyJyZWZlcnJlciI6IiIsInJlcXVlc3RfaWQiOiIwN0M1OjM4NUQ6MUQ3MzQwNDoyQTE2N0I3OjVGRDdEQjQyIiwidmlzaXRvcl9pZCI6IjgzMzc2Njk0NDYyNTEyMjExMyIsInJlZ2lvbl9lZGdlIjoiaWFkIiwicmVnaW9uX3JlbmRlciI6ImlhZCJ9" data-pjax-transient="true"/><meta name="visitor-hmac" content="cc1138eeb60dcaa7447d887e23b8b83e9256fb10d1df7fcf8dd2169843961920" data-pjax-transient="true"/><meta name="cookie-consent-required" content="false" data-pjax-transient="true"/>
+  <meta name="request-id" content="07C5:168F:20B81EC:2E6AE62:5FD7DFE1" data-pjax-transient="true"/><meta name="html-safe-nonce" content="f19afb754daf52f807840936b91881a0be44ac2bac7a85fc2938d9e0c8e50b31" data-pjax-transient="true"/><meta name="visitor-payload" content="eyJyZWZlcnJlciI6IiIsInJlcXVlc3RfaWQiOiIwN0M1OjE2OEY6MjBCODFFQzoyRTZBRTYyOjVGRDdERkUxIiwidmlzaXRvcl9pZCI6IjkxOTM2NjI2MDcyMTUwMjYxNDUiLCJyZWdpb25fZWRnZSI6ImlhZCIsInJlZ2lvbl9yZW5kZXIiOiJpYWQifQ==" data-pjax-transient="true"/><meta name="visitor-hmac" content="77b96817fcb4d36992242821e91a9e0e2a754d182b7e621e6d901441c577df8b" data-pjax-transient="true"/><meta name="cookie-consent-required" content="false" data-pjax-transient="true"/>
 
     <meta name="hovercard-subject-tag" content="repository:301110516" data-pjax-transient>
 
@@ -101,7 +101,7 @@
 
     <meta name="enabled-features" content="CORPORATE_SPONSORS_CREDIT_CARD,MARKETPLACE_PENDING_INSTALLATIONS">
 
-  <meta http-equiv="x-pjax-version" content="de85db46fb267953389449de6dc212d386b1293e7d675b112439fd8004cd29fb">
+  <meta http-equiv="x-pjax-version" content="b40b58587689130a6881218fcdee5a25ad5aa9e79f9f99ee591fc5b90e409426">
   
 
         <link href="https://github.com/busytex/busytex/commits/release_88f12c721278c652c9fb69c6a097af9481a2ae7e.atom" rel="alternate" title="Recent Commits to busytex:release_88f12c721278c652c9fb69c6a097af9481a2ae7e" type="application/atom+xml">
@@ -307,7 +307,7 @@
           spellcheck="false"
           autocomplete="off"
           >
-          <input type="hidden" data-csrf="true" class="js-data-jump-to-suggestions-path-csrf" value="0NSgdPpfdfEhLDSEifG9F79n0gUN0FTEUb5nMzgNmUYXUuExmMFlvPXEh0tVRKD1TNMVS68AFWOEGP16m7qwqg==" />
+          <input type="hidden" data-csrf="true" class="js-data-jump-to-suggestions-path-csrf" value="mLHqdkCQBCte7/djZo1CovSKNgmDNCuy8Gp8RKGHIOGyE1jZrWVzSZcLJw7zGazM+plX31Re/N0rbyqltjKlzA==" />
           <input type="hidden" class="js-site-search-type-field" name="type" >
             <img src="https://github.githubassets.com/images/search-key-slash.svg" alt="" class="mr-2 header-search-key-slash">
 
@@ -714,7 +714,7 @@
         </li>
         <li class="mt-3">
           
-<details class="details-reset details-overlay select-menu" id="tag-select-menu-a954c666-3e54-11eb-9f5e-58515394979a">
+<details class="details-reset details-overlay select-menu" id="tag-select-menu-6a84868a-3e57-11eb-9872-6ec0e6259840">
   <summary class="btn btn-sm select-menu-button text-md-left" title="Compare">
     <i>Compare</i>
   </summary>
@@ -727,12 +727,12 @@
     <div class="select-menu-filters">
       <remote-input class="select-menu-text-filter"
         src="/busytex/busytex/compare/tag-list?range=release_88f12c721278c652c9fb69c6a097af9481a2ae7e&amp;tag_name=release_88f12c721278c652c9fb69c6a097af9481a2ae7e&amp;type=base"
-        aria-owns="tags-menu-a954c666-3e54-11eb-9f5e-58515394979a">
+        aria-owns="tags-menu-6a84868a-3e57-11eb-9872-6ec0e6259840">
         <input type="text" class="form-control" aria-label="Find a tag" placeholder="Find a tag" autofocus>
       </remote-input>
     </div>
 
-    <div class="select-menu-list" id="tags-menu-a954c666-3e54-11eb-9f5e-58515394979a">
+    <div class="select-menu-list" id="tags-menu-6a84868a-3e57-11eb-9872-6ec0e6259840">
       <div class="p-2">Search for a tag</div>
     </div>
   </details-menu>
@@ -767,7 +767,7 @@
           </li>
           <li>
             
-<details class="details-reset details-overlay select-menu" id="tag-select-menu-a954d638-3e54-11eb-8975-8cfb546c21b4">
+<details class="details-reset details-overlay select-menu" id="tag-select-menu-6a8492a6-3e57-11eb-8ba5-7cc7e1c08a3a">
   <summary class="btn btn-sm select-menu-button text-md-left" title="Compare">
     <i>Compare</i>
   </summary>
@@ -780,12 +780,12 @@
     <div class="select-menu-filters">
       <remote-input class="select-menu-text-filter"
         src="/busytex/busytex/compare/tag-list?range=release_88f12c721278c652c9fb69c6a097af9481a2ae7e&amp;tag_name=release_88f12c721278c652c9fb69c6a097af9481a2ae7e&amp;type=base"
-        aria-owns="tags-menu-a954d638-3e54-11eb-8975-8cfb546c21b4">
+        aria-owns="tags-menu-6a8492a6-3e57-11eb-8ba5-7cc7e1c08a3a">
         <input type="text" class="form-control" aria-label="Find a tag" placeholder="Find a tag" autofocus>
       </remote-input>
     </div>
 
-    <div class="select-menu-list" id="tags-menu-a954d638-3e54-11eb-8975-8cfb546c21b4">
+    <div class="select-menu-list" id="tags-menu-6a8492a6-3e57-11eb-8ba5-7cc7e1c08a3a">
       <div class="p-2">Search for a tag</div>
     </div>
   </details-menu>
