@@ -46,8 +46,6 @@ jobs:
       
       - name: Download Release Assets from https://github.com/busytex/busytex
         run: |
-          md5sum dist/busytex_pipeline.js
-
           mkdir -p dist
           wget -P dist -N $(printf "${{ github.event.inputs.busytexreleaseurl }}/download/%s " $BUSYTEX_ASSETS_CORE)
           wget -P dist -N $(printf "${{ github.event.inputs.busytexubuntureleaseurl }}/download/%s " $BUSYTEX_ASSETS_UBUNTU)
@@ -55,8 +53,6 @@ jobs:
           git clone https://github.com/busytex/busytex --branch ${{ github.event.inputs.busytexref }} --single-branch --depth 1 busytex
           cp $(printf "busytex/%s " $BUSYTEX_FILES) dist
           rm -rf busytex
-          
-          md5sum dist/busytex_pipeline.js
       
       - name: Download Release Assets and Files from https://github.com/busyide/busyide
         run: |
@@ -74,4 +70,3 @@ jobs:
           git add -A . dist
           git commit -a -m ... || true
           git push || true
-
