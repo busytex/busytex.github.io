@@ -46,22 +46,24 @@ jobs:
       
       - name: Download Release Assets from https://github.com/busytex/busytex
         run: |
+          md5sum dist/busytex_pipeline.js
+
           mkdir -p dist busytex
           wget -P dist -nc $(printf "${{ github.event.inputs.busytexreleaseurl }}/download/%s " $BUSYTEX_ASSETS_CORE)
           wget -P dist -nc $(printf "${{ github.event.inputs.busytexubuntureleaseurl }}/download/%s " $BUSYTEX_ASSETS_UBUNTU)
           
-          #wget -O busytex.tar.gz $(echo "${{ github.event.inputs.busytexreleaseurl }}" | sed 's/github.com/api.github.com\/repos/' | xargs curl -s | grep "tarball_url" | cut -d'"' -f4)
           wget -O busytex.tar.gz https://github.com/busytex/busytex/archive/${{ github.event.inputs.busytexref }}.tar.gz
           tar -xf busytex.tar.gz --strip-components=1 --directory=busytex
           cp $(printf "busytex/%s " $BUSYTEX_FILES) dist
           rm -rf busytex busytex.tar.gz
+          
+          md5sum dist/busytex_pipeline.js
       
       - name: Download Release Assets and Files from https://github.com/busyide/busyide
         run: |
           mkdir -p dist busyide
           wget -P dist -nc $(printf "${{ github.event.inputs.busyidereleaseurl }}/download/%s " $BUSYIDE_ASSETS)
           
-          #wget -O busyide.tar.gz $(echo "${{ github.event.inputs.busyidereleaseurl }}" | sed 's/github.com/api.github.com\/repos/' | xargs curl -s | grep "tarball_url" | cut -d'"' -f4)
           wget -O busyide.tar.gz https://github.com/busytex/busyide/archive/${{ github.event.inputs.busyideref }}.tar.gz
           tar -xf busyide.tar.gz --strip-components=1 --directory=busyide
           cp $(printf "busyide/%s " $BUSYIDE_FILES) .
@@ -72,6 +74,6 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add -A . dist
-          git commit -a -m ...
-          git push
+          git commit -a -m ... || true
+          git push || true
 
