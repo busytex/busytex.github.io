@@ -48,27 +48,24 @@ jobs:
         run: |
           md5sum dist/busytex_pipeline.js
 
-          mkdir -p dist busytex
+          mkdir -p dist
           wget -P dist -N $(printf "${{ github.event.inputs.busytexreleaseurl }}/download/%s " $BUSYTEX_ASSETS_CORE)
           wget -P dist -N $(printf "${{ github.event.inputs.busytexubuntureleaseurl }}/download/%s " $BUSYTEX_ASSETS_UBUNTU)
           
-          wget -O busytex.tar.gz https://github.com/busytex/busytex/archive/${{ github.event.inputs.busytexref }}.tar.gz
-          tar -xf busytex.tar.gz --strip-components=1 --directory=busytex
-          echo cp $(printf "busytex/%s " $BUSYTEX_FILES) dist
+          git clone https://github.com/busytex/busytex --single-branch ${{ github.event.inputs.busytexref }} --depth 1 
           cp $(printf "busytex/%s " $BUSYTEX_FILES) dist
-          rm -rf busytex busytex.tar.gz
+          rm -rf busytex
           
           md5sum dist/busytex_pipeline.js
       
       - name: Download Release Assets and Files from https://github.com/busyide/busyide
         run: |
-          mkdir -p dist busyide
+          mkdir -p dist
           wget -P dist -N $(printf "${{ github.event.inputs.busyidereleaseurl }}/download/%s " $BUSYIDE_ASSETS)
           
-          wget -O busyide.tar.gz https://github.com/busytex/busyide/archive/${{ github.event.inputs.busyideref }}.tar.gz
-          tar -xf busyide.tar.gz --strip-components=1 --directory=busyide
+          git clone https://github.com/busytex/busyide --single-branch ${{ github.event.inputs.busyideref }} --depth 1 
           cp $(printf "busyide/%s " $BUSYIDE_FILES) .
-          rm -rf busyide busyide.tar.gz
+          rm -rf busyide 
 
       - name: Add, Commit, Push
         run: |
