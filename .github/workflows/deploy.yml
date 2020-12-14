@@ -10,6 +10,16 @@ env:
 on: 
   workflow_dispatch:
     inputs:
+      busytexref:
+        description: 'busytex git ref'
+        required: true
+        default: main
+
+      busyideref:
+        description: 'busyide git ref'
+        required: true
+        default: main
+
       busytexreleaseurl:
         description: 'busytex release url for core assets'
         required: true
@@ -40,7 +50,8 @@ jobs:
           wget -P dist -nc $(printf "${{ github.event.inputs.busytexreleaseurl }}/download/%s " $BUSYTEX_ASSETS_CORE)
           wget -P dist -nc $(printf "${{ github.event.inputs.busytexubuntureleaseurl }}/download/%s " $BUSYTEX_ASSETS_UBUNTU)
           
-          wget -O busytex.tar.gz $(echo "${{ github.event.inputs.busytexreleaseurl }}" | sed 's/github.com/api.github.com\/repos/' | xargs curl -s | grep "tarball_url" | cut -d'"' -f4)
+          #wget -O busytex.tar.gz $(echo "${{ github.event.inputs.busytexreleaseurl }}" | sed 's/github.com/api.github.com\/repos/' | xargs curl -s | grep "tarball_url" | cut -d'"' -f4)
+          wget -O busytex.tar.gz https://github.com/busytex/busytex/archive/${{ github.event.inputs.busytexref }}.tar.gz
           tar -xf busytex.tar.gz --strip-components=1 --directory=busytex
           cp $(printf "busytex/%s " $BUSYTEX_FILES) dist
           rm -rf busytex busytex.tar.gz
@@ -50,7 +61,8 @@ jobs:
           mkdir -p dist busyide
           wget -P dist -nc $(printf "${{ github.event.inputs.busyidereleaseurl }}/download/%s " $BUSYIDE_ASSETS)
           
-          wget -O busyide.tar.gz $(echo "${{ github.event.inputs.busyidereleaseurl }}" | sed 's/github.com/api.github.com\/repos/' | xargs curl -s | grep "tarball_url" | cut -d'"' -f4)
+          #wget -O busyide.tar.gz $(echo "${{ github.event.inputs.busyidereleaseurl }}" | sed 's/github.com/api.github.com\/repos/' | xargs curl -s | grep "tarball_url" | cut -d'"' -f4)
+          wget -O busyide.tar.gz https://github.com/busytex/busyide/archive/${{ github.event.inputs.busyideref }}.tar.gz
           tar -xf busyide.tar.gz --strip-components=1 --directory=busyide
           cp $(printf "busyide/%s " $BUSYIDE_FILES) .
           rm -rf busyide busyide.tar.gz
