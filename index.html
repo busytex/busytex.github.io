@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="logo.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>busytex</title>
+    <link rel="stylesheet" href="https://unpkg.com/xterm@3.8.0/dist/xterm.css" />
+    <style>
+        body {
+            height: 100vh;
+            padding: 0; 
+            margin: 0;
+        }
+
+        #fileupload {
+            display: none;
+        }
+
+        #viewer {
+            width: 50%;
+        }
+
+        #editor {
+            width: 50%; 
+            border: 1px solid grey;
+        }
+
+        #terminal {
+            width: 100%; 
+            height: 60%;
+        }
+
+        #status {
+            width: 100%;
+            height: 40%;
+            padding: 5px;
+            margin: 0;
+            resize: none;
+            box-sizing: border-box;
+        }
+
+        #pdfpreview {
+            width: 99%;
+            height: 100%;
+        }
+    </style>
+  </head>
+  <body>
+    <div style="display: flex; flex-direction: row; height: 5%">
+        <a style="display: contents" href="https://github.com/busytex/busytex">
+            <img src="logo.svg" style="height:100%"></img>
+        </a>
+        <select id="verbose">
+            <option value="silent" selected="selected">Verbosity - Silent</option>
+            <option value="info">Verbosity - Info</option>
+            <option value="debug">Verbosity - Debug</option>
+        </select>
+        <button id="compile">Compile</button>
+        <button id="download_pdf">Download PDF</button>
+        <button id="download_zip">Download ZIP</button>
+        <button id="download">Download Current File</button>
+        <button id="share">Share Link</button>
+        <div style="display: flex; margin-left:auto">
+            <input type="text" style="width: 250px" id="git_https_path" placeholder="GitHub https link"></input>
+            <input type="text" style="width: 100px" id="git_token" placeholder="GitHub Token" title="for private clone/push"></input>
+            <button id="clone">Clone</button>
+            <button id="pull">Pull</button>
+            <button id="push">Push</button>
+            <input type="text" style="width: 100px" id="git_release" placeholder="Publish Release Name" title="for publishing a PDF into a release"></input>
+            <button id="publish">Publish PDF</button>
+            <button id="man">Help</button>
+        </div>
+    </div>
+    <div style="display: flex; height: 80%">
+      <div id="editor"></div>
+      <div id="viewer">
+        <iframe id="pdfpreview"></iframe>
+        <img hidden id="imgpreview"></img>
+        <pre hidden id="txtpreview"></pre>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: row; height: 15%">
+      <div id="terminal" style="height:100%; width: 50%"></div>
+      <textarea style="height:100%; width: 50%"
+        name="status"
+        id="status"
+        cols="1"
+        rows="1"
+      ></textarea>
+      <input type="file" id="fileupload">
+    </div>
+
+
+<script src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script>
+
+<script type="module">
+
+import { Shell } from '/shell.js'
+
+const ui =
+{
+    imgpreview : document.getElementById('imgpreview'),
+    pdfpreview : document.getElementById('pdfpreview'),
+    txtpreview : document.getElementById('txtpreview'),
+    fileupload : document.getElementById('fileupload'),
+    editor : document.getElementById('editor'),
+    terminal : document.getElementById('terminal'),
+    status : document.getElementById('status'),
+    clone : document.getElementById('clone'),
+    pull : document.getElementById('pull'),
+    push : document.getElementById('push'),
+    compile : document.getElementById('compile'),
+    download_pdf : document.getElementById('download_pdf'),
+    download_zip : document.getElementById('download_zip'),
+    download : document.getElementById('download'),
+    verbose : document.getElementById('verbose'),
+    git_https_path : document.getElementById('git_https_path'),
+    git_token : document.getElementById('git_token'),
+    git_release : document.getElementById('git_release'),
+    man : document.getElementById('man'),
+    share : document.getElementById('share'),
+
+    create_and_click_download_link(file_path, content, mime)
+    {
+        const a = document.createElement('a');
+        a.download = file_path;
+        a.href = URL.createObjectURL(new Blob([content], {type: mime}));
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+  
+        setTimeout(() =>
+        {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+        }, 2000);
+    },
+    
+    onresize()
+    {
+        window.busyshell.editor.layout()
+        window.busyshell.terminal.fit()
+    },
+    
+    log(text)
+    {
+        const ansi_reset_sequence = '\x1bc';
+        if(text == ansi_reset_sequence)
+            ui.status.value = '';
+        else
+        {
+            ui.status.value += text;
+            ui.status.value += '\n';
+            ui.status.scrollTop = ui.status.scrollHeight;
+        }
+    }
+};
+  
+const paths = 
+{
+    busytex_js : '/dist/busytex.js', 
+    busytex_wasm : '/dist/busytex.wasm',
+    busytex_worker_js : '/dist/busytex_worker.js', 
+    busytex_pipeline_js : '/dist/busytex_pipeline.js',
+    texmf_local : ['./texmf'],
+    texlive_js : ['/dist/texlive-basic.js'], //, '/dist/texlive-latex-recommended.js', '/dist/texlive-latex-extra.js'];
+    lang_monarch_json : './monarch_lang.json',
+    latex_monarch_json : './monarch_latex.json',
+    bibtex_monarch_json : './monarch_bibtex.json',
+    readme_tex : '/readme.tex',
+    unpkg_monaco_editor : 'https://unpkg.com/monaco-editor@latest/min/vs',
+    unpkg_xterm : 'https://unpkg.com/xterm@3.8.0/dist'
+};
+
+require.config({ paths: { vs: paths.unpkg_monaco_editor , xterm: paths.unpkg_xterm } });
+
+window.MonacoEnvironment = 
+{
+    getWorkerUrl: function (workerId, label)
+    {
+        // Before loading vs/editor/editor.main, define a global MonacoEnvironment that overwrites
+        // the default worker url location (used when creating WebWorkers). The problem here is that
+        // HTML5 does not allow cross-domain web workers, so we need to proxy the instantiation of
+        // a web worker through a same-domain script
+        return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
+            self.MonacoEnvironment = { baseUrl: 'https://unpkg.com/monaco-editor@latest/min/' };
+            importScripts('https://unpkg.com/monaco-editor@latest/min/vs/base/worker/workerMain.js');`)}`
+    }
+};
+
+function init_editor(monaco, editor_element, lang_monarch, latex_monarch, bibtex_monarch)
+{
+    // https://microsoft.github.io/monaco-editor/monarch.html
+    // https://github.com/microsoft/monaco-languages/blob/master/src/python/python.ts
+
+    // https://github.com/koka-lang/madoko/blob/master/styles/lang/latex.json
+    monaco.languages.register({ id: 'latex' });
+	monaco.languages.setMonarchTokensProvider('latex', latex_monarch);
+    monaco.languages.setLanguageConfiguration('latex', lang_monarch);
+    
+    // https://github.com/koka-lang/madoko/blob/master/styles/lang/bibtex.json
+	monaco.languages.register({ id: 'bibtex' });
+	monaco.languages.setMonarchTokensProvider('bibtex', bibtex_monarch);
+    monaco.languages.setLanguageConfiguration('bibtex', lang_monarch);
+
+	return monaco.editor.create(editor_element, { theme: 'vs-dark', language : 'latex' });
+}
+
+function init_terminal(Terminal, terminal_element, addon)
+{
+    Terminal.applyAddon(addon);
+    const terminal = new Terminal();
+    terminal.open(ui.terminal);
+    return terminal;
+}
+
+const monarch_promises = [paths.lang_monarch_json, paths.latex_monarch_json, paths.bibtex_monarch_json].map(x => fetch(x).then(x => x.json()));
+
+const readme_tex_promise = fetch(paths.readme_tex).then(x => x.text());
+
+require(['vs/editor/editor.main', 'xterm/xterm', 'xterm/addons/fit/fit', './dist/busy', 'sha1'], async (Monaco, Terminal, terminal_addon_fit, backend_emscripten_module_async, sha1) =>
+{
+    const editor = init_editor(Monaco, ui.editor, ...(await Promise.all(monarch_promises)));
+    const terminal = init_terminal(Terminal, ui.terminal, terminal_addon_fit);
+    
+    /*if(window.location.hash)
+    {
+        window.location.hash
+        window.location.search
+    }*/
+
+    window.busyshell = new Shell(ui, paths, await readme_tex_promise, terminal, editor, window.location.origin);
+    window.onresize = ui.onresize;
+    window.onresize();
+
+    await window.busyshell.run(backend_emscripten_module_async, sha1);
+});
+
+</script>
+  
+</body>
+</html>
