@@ -19,7 +19,7 @@
 
 
   <link crossorigin="anonymous" media="all" integrity="sha512-iNnUjxnDZbx2GqneSSzGFrvmlaN/BjrGF5q/p8z9Fa0/c+MsD+geqNbi5m2pBphVcQ4hV3yIWFLvyreiyDwvkQ==" rel="stylesheet" href="https://github.githubassets.com/assets/frameworks-color-modes-88d9d48f19c365bc761aa9de492cc616.css" />
-  <link crossorigin="anonymous" media="all" integrity="sha512-PnymmQ2HEV97vf+tS2KOSBydnDvVnlE9dEBxuAZa7toHnfL83nJBUZ+dE/URK82pEDuNz7Uld77UmUoXsy/erQ==" rel="stylesheet" href="https://github.githubassets.com/assets/site-3e7ca6990d87115f7bbdffad4b628e48.css" />
+  <link crossorigin="anonymous" media="all" integrity="sha512-9EHFZuxUs/24baBIkYdAVVliLIVblalN0qHdm61iNG1xeGZsMO3hu3EpjA+eE4ec0WhCi+ciWVpXAVOliqke6w==" rel="stylesheet" href="https://github.githubassets.com/assets/site-f441c566ec54b3fdb86da04891874055.css" />
     <link crossorigin="anonymous" media="all" integrity="sha512-mc6hEEpfziX1pFkhVTe0/gECILFQEIGxlwy2h/7wSY0xw8L2vmJbxNO6pDvHHHQt9Gt0eXBeli9mz2RXQ4xtjA==" rel="stylesheet" href="https://github.githubassets.com/assets/github-99cea1104a5fce25f5a459215537b4fe.css" />
     
     
@@ -63,7 +63,7 @@
   <link rel="assets" href="https://github.githubassets.com/">
   
 
-  <meta name="request-id" content="07C4:4234:3A1479:5248B6:5FD7D287" data-pjax-transient="true"/><meta name="html-safe-nonce" content="af77e94b19b1880bcb773a1e553803d0c3f07a75e55160722e2ae5aedb908d08" data-pjax-transient="true"/><meta name="visitor-payload" content="eyJyZWZlcnJlciI6IiIsInJlcXVlc3RfaWQiOiIwN0M0OjQyMzQ6M0ExNDc5OjUyNDhCNjo1RkQ3RDI4NyIsInZpc2l0b3JfaWQiOiI1NjUyNTk2MzQ5NTIwNTY0ODY5IiwicmVnaW9uX2VkZ2UiOiJhcC1zb3V0aGVhc3QtMiIsInJlZ2lvbl9yZW5kZXIiOiJhcC1zb3V0aGVhc3QtMiJ9" data-pjax-transient="true"/><meta name="visitor-hmac" content="6a3bd5698e7e7c8727024f61002b551592f060ded20e39ead58a4cece67c2895" data-pjax-transient="true"/><meta name="cookie-consent-required" content="false" data-pjax-transient="true"/>
+  <meta name="request-id" content="07C5:5A87:A5CA3B:11AE298:5FD7D709" data-pjax-transient="true"/><meta name="html-safe-nonce" content="696ecba408e57407ce71ac5ccc06a377f20fb76b71d02601c37a30cabf74f30f" data-pjax-transient="true"/><meta name="visitor-payload" content="eyJyZWZlcnJlciI6IiIsInJlcXVlc3RfaWQiOiIwN0M1OjVBODc6QTVDQTNCOjExQUUyOTg6NUZEN0Q3MDkiLCJ2aXNpdG9yX2lkIjoiNTMzNDYyNTA4NTc4MDY0NTY0MCIsInJlZ2lvbl9lZGdlIjoiaWFkIiwicmVnaW9uX3JlbmRlciI6ImlhZCJ9" data-pjax-transient="true"/><meta name="visitor-hmac" content="f1865ef6e0cd7adb6322979dc37dca9b39661e18845991012f722037275ebbee" data-pjax-transient="true"/><meta name="cookie-consent-required" content="false" data-pjax-transient="true"/>
 
     <meta name="hovercard-subject-tag" content="repository:301110516" data-pjax-transient>
 
@@ -307,7 +307,7 @@
           spellcheck="false"
           autocomplete="off"
           >
-          <input type="hidden" data-csrf="true" class="js-data-jump-to-suggestions-path-csrf" value="dgAps9BMD9Qnq9PWdITHdqLMBF0Y2TOOF4T5XYBc/t4Kj8cxD46BY/GOv92LQ459j0tmHjfc9L3jAw49DkdYVw==" />
+          <input type="hidden" data-csrf="true" class="js-data-jump-to-suggestions-path-csrf" value="scUkDY6+WTRPwApaXjLIMHiDYekQdYW4XiBLCjSEILFo7a+i04fjJZ4gMpprHXUycjbWbADvna3k3AkviEiOCw==" />
           <input type="hidden" class="js-site-search-type-field" name="type" >
             <img src="https://github.githubassets.com/images/search-key-slash.svg" alt="" class="mr-2 header-search-key-slash">
 
@@ -714,7 +714,7 @@
         </li>
         <li class="mt-3">
           
-<details class="details-reset details-overlay select-menu" id="tag-select-menu-757f73d6-3e4f-11eb-8fbf-90ad3694f550">
+<details class="details-reset details-overlay select-menu" id="tag-select-menu-253ec216-3e52-11eb-92ce-46582a20e435">
   <summary class="btn btn-sm select-menu-button text-md-left" title="Compare">
     <i>Compare</i>
   </summary>
@@ -727,12 +727,12 @@
     <div class="select-menu-filters">
       <remote-input class="select-menu-text-filter"
         src="/busytex/busytex/compare/tag-list?range=release_88f12c721278c652c9fb69c6a097af9481a2ae7e&amp;tag_name=release_88f12c721278c652c9fb69c6a097af9481a2ae7e&amp;type=base"
-        aria-owns="tags-menu-757f73d6-3e4f-11eb-8fbf-90ad3694f550">
+        aria-owns="tags-menu-253ec216-3e52-11eb-92ce-46582a20e435">
         <input type="text" class="form-control" aria-label="Find a tag" placeholder="Find a tag" autofocus>
       </remote-input>
     </div>
 
-    <div class="select-menu-list" id="tags-menu-757f73d6-3e4f-11eb-8fbf-90ad3694f550">
+    <div class="select-menu-list" id="tags-menu-253ec216-3e52-11eb-92ce-46582a20e435">
       <div class="p-2">Search for a tag</div>
     </div>
   </details-menu>
@@ -767,7 +767,7 @@
           </li>
           <li>
             
-<details class="details-reset details-overlay select-menu" id="tag-select-menu-757f8b5a-3e4f-11eb-9c1f-8f307ae06235">
+<details class="details-reset details-overlay select-menu" id="tag-select-menu-253ed5d0-3e52-11eb-9f44-2e038608136b">
   <summary class="btn btn-sm select-menu-button text-md-left" title="Compare">
     <i>Compare</i>
   </summary>
@@ -780,12 +780,12 @@
     <div class="select-menu-filters">
       <remote-input class="select-menu-text-filter"
         src="/busytex/busytex/compare/tag-list?range=release_88f12c721278c652c9fb69c6a097af9481a2ae7e&amp;tag_name=release_88f12c721278c652c9fb69c6a097af9481a2ae7e&amp;type=base"
-        aria-owns="tags-menu-757f8b5a-3e4f-11eb-9c1f-8f307ae06235">
+        aria-owns="tags-menu-253ed5d0-3e52-11eb-9f44-2e038608136b">
         <input type="text" class="form-control" aria-label="Find a tag" placeholder="Find a tag" autofocus>
       </remote-input>
     </div>
 
-    <div class="select-menu-list" id="tags-menu-757f8b5a-3e4f-11eb-9c1f-8f307ae06235">
+    <div class="select-menu-list" id="tags-menu-253ed5d0-3e52-11eb-9f44-2e038608136b">
       <div class="p-2">Search for a tag</div>
     </div>
   </details-menu>

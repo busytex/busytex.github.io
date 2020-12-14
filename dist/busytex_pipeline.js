@@ -64,7 +64,7 @@ class BusytexPipeline
         
         this.project_dir = '/home/web_user/project_dir/';
         this.bin_busytex = '/bin/busytex';
-        this.fmt_latex = '/latex.fmt';
+        this.fmt_latex = '/xelatex.fmt';
         this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => (texmf.startsWith('/') ? '' : this.project_dir) + texmf + '/texmf-dist').join(':');
         this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
         this.dir_cnf = '/texlive/texmf-dist/web2c';
@@ -91,7 +91,7 @@ class BusytexPipeline
 
         this.mem_header_size = 2 ** 25;
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
-        this.Module = this.preload ? this.reload_module(this.env, this.project_dir) : null;
+        this.Module = this.preload == false ? null : this.reload_module(this.env, this.project_dir);
     }
 
     terminate()
@@ -204,13 +204,29 @@ class BusytexPipeline
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
         FS.mount(FS.filesystems.MEMFS, {}, this.project_dir);
+        let dirs = new Set(['/']);
+
+        const mkdir_p = dirpath =>
+        {
+            if(!dirs.has(dirpath))
+            {
+                mkdir_p(PATH.dirname(dirpath));
+                
+                FS.mkdir(dirpath);
+                dirs.add(dirpath);
+            }
+        };
+
         for(const {path, contents} of files.sort((lhs, rhs) => lhs['path'] < rhs['path'] ? -1 : 1))
         {
             const absolute_path = PATH.join2(this.project_dir, path);
             if(contents == null)
-                FS.mkdir(absolute_path);
+                mkdir_p(absolute_path);
             else
+            {
+                mkdir_p(PATH.dirname(absolute_path));
                 FS.writeFile(absolute_path, contents);
+            }
         }
         
         const dirname = main_tex_path.slice(0, main_tex_path.length - source_name.length) || '.';
@@ -238,8 +254,7 @@ class BusytexPipeline
         const log = FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : null;
         
         FS.unmount(this.project_dir);
-        if(!this.preload)
-            this.Module = null;
+        this.Module = this.preload == false ? null : this.Module;
         
         return {pdf : pdf, log : log};
     }
