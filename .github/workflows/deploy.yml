@@ -42,7 +42,7 @@ jobs:
           
           wget -O busytex.tar.gz $(echo "${{ github.event.inputs.busytexreleaseurl }}" | sed 's/github.com/api.github.com\/repos/' | xargs curl -s | grep "tarball_url" | cut -d'"' -f4)
           tar -xf busytex.tar.gz --strip-components=1 --directory=busytex
-          cp $(printf "busytex/%s " $BUSYTEX_FILES) .
+          cp $(printf "busytex/%s " $BUSYTEX_FILES) dist
           rm -rf busytex busytex.tar.gz
       
       - name: Download Release Assets and Files from https://github.com/busyide/busyide
@@ -52,7 +52,7 @@ jobs:
           
           wget -O busyide.tar.gz $(echo "${{ github.event.inputs.busyidereleaseurl }}" | sed 's/github.com/api.github.com\/repos/' | xargs curl -s | grep "tarball_url" | cut -d'"' -f4)
           tar -xf busyide.tar.gz --strip-components=1 --directory=busyide
-          cp $(printf "busyide/%s " $BUSYIDE_FILES) dist
+          cp $(printf "busyide/%s " $BUSYIDE_FILES) .
           rm -rf busyide busyide.tar.gz
 
       - name: Add, Commit, Push
