@@ -52,7 +52,7 @@ jobs:
           wget -P dist -N $(printf "${{ github.event.inputs.busytexreleaseurl }}/download/%s " $BUSYTEX_ASSETS_CORE)
           wget -P dist -N $(printf "${{ github.event.inputs.busytexubuntureleaseurl }}/download/%s " $BUSYTEX_ASSETS_UBUNTU)
           
-          git clone https://github.com/busytex/busytex --single-branch ${{ github.event.inputs.busytexref }} --depth 1 
+          git clone https://github.com/busytex/busytex busytex --single-branch ${{ github.event.inputs.busytexref }} --depth 1 
           cp $(printf "busytex/%s " $BUSYTEX_FILES) dist
           rm -rf busytex
           
@@ -63,7 +63,7 @@ jobs:
           mkdir -p dist
           wget -P dist -N $(printf "${{ github.event.inputs.busyidereleaseurl }}/download/%s " $BUSYIDE_ASSETS)
           
-          git clone https://github.com/busytex/busyide --single-branch ${{ github.event.inputs.busyideref }} --depth 1 
+          git clone https://github.com/busytex/busyide busyide --single-branch ${{ github.event.inputs.busyideref }} --depth 1 
           cp $(printf "busyide/%s " $BUSYIDE_FILES) .
           rm -rf busyide 
 
