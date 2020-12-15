@@ -42,8 +42,8 @@ export class Shell
 
         this.basename = path => path.slice(path.lastIndexOf('/') + 1);
         this.ui.clone.onclick = () => this.commands(['cd', 'clone ' + ui.github_https_path.value, 'cd ' + this.basename(ui.github_https_path.value)]);
-        this.ui.download_pdf.onclick = () => this.commands(['download ' + this.pdf_path]);
-        this.ui.download_log.onclick = () => this.commands(['download ' + this.log_path]);
+        this.ui.download_pdf.onclick = () => this.commands(['open ' + this.pdf_path]);
+        this.ui.view_log.onclick = () => this.commands(['download ' + this.log_path]);
         this.ui.download.onclick = () => this.commands(['download ' + this.tex_path]);
         //this.ui.download_zip.onclick = () => this.commands(['download ' + this.home_dir]);
         this.ui.compile.onclick = () => this.commands(['latexmk ' + this.tex_path]);
@@ -303,25 +303,30 @@ export class Shell
         if(file_path.endsWith('.tex'))
             this.tex_path = file_path.startsWith('/') ? file_path : (this.FS.cwd() + '/' + file_path);
 
-        if(file_path.endsWith('.pdf') || file_path.endsWith('.jpg') || file_path.endsWith('.png') || file_path.endsWith('.svg'))
+        if(file_path.endsWith('.pdf') || file_path.endsWith('.jpg') || file_path.endsWith('.png') || file_path.endsWith('.svg') || file_path.endsWith('.log'))
         {
-            contents = contents || this.FS.readFile(file_path, {encoding : 'binary'});
+            contents = contents || (file_path.endsWith('.log') ? this.FS.readFile(file_path, {encoding: 'utf8'}) : this.FS.readFile(file_path, {encoding : 'binary'}));
             
-            if(file_path.endsWith('.svg'))
+            if(file_path.endsWith('.log'))
+            {
+                this.ui.txtpreview.innerText = contents;
+                [this.ui.imgpreview.hidden, this.ui.pdfpreview.hidden, this.ui.txtpreview.hidden] = [true, true, false];
+            }
+            else if(file_path.endsWith('.svg'))
             {
                 this.ui.imgpreview.src = 'data:image/svg+xml;base64,' + btoa(String.fromCharCode.apply(null, contents));
-                [this.ui.imgpreview.hidden, this.ui.pdfpreview.hidden] = [false, true];
+                [this.ui.imgpreview.hidden, this.ui.pdfpreview.hidden, this.ui.txtpreview.hidden] = [false, true, true];
             }
             else if(file_path.endsWith('.png') || file_path.endsWith('.jpg'))
             {
                 const ext = file_path.endsWith('.png') ? 'png' : 'jpg';
                 this.ui.imgpreview.src = `data:image/${ext};base64,` + btoa(String.fromCharCode.apply(null, contents));
-                [this.ui.imgpreview.hidden, this.ui.pdfpreview.hidden] = [false, true];
+                [this.ui.imgpreview.hidden, this.ui.pdfpreview.hidden, this.ui.txtpreview.hidden] = [false, true, true];
             }
             else if(file_path.endsWith('.pdf'))
             {
                 this.ui.pdfpreview.src = URL.createObjectURL(new Blob([contents], {type: 'application/pdf'}));
-                [this.ui.imgpreview.hidden, this.ui.pdfpreview.hidden] = [true, false];
+                [this.ui.imgpreview.hidden, this.ui.pdfpreview.hidden, this.ui.txtpreview.hidden] = [true, false, true];
             }
         }
         else
