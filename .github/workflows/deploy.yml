@@ -1,12 +1,13 @@
 name: deploy
 
 env:
+    BUSYTEX_RELEASES_URL: https://github.com/busytex/busytex/releases
     BUSYTEX_FILES: busytex_pipeline.js busytex_worker.js
     BUSYTEX_ASSETS_CORE: busytex.wasm busytex.js texlive-basic.js texlive-basic.data
     BUSYTEX_ASSETS_UBUNTU: ubuntu-texlive-latex-base.data ubuntu-texlive-latex-base.js ubuntu-texlive-latex-extra.data ubuntu-texlive-latex-extra.js ubuntu-texlive-latex-recommended.data ubuntu-texlive-latex-recommended.js
+    BUSYIDE_RELEASES_URL: https://github.com/busytex/busyide/releases
     BUSYIDE_ASSETS: busyide.js 
     BUSYIDE_FILES: shell.js guthub.js sha1.js index.html readme.tex monarch_lang.json monarch_latex.json monarch_bibtex.json logo.png logo.svg
-
 on: 
   workflow_dispatch:
     inputs:
@@ -20,20 +21,18 @@ on:
         required: true
         default: main
 
-      busytexreleaseurl:
-        description: 'busytex release url for core assets'
-        required: true
-        default: 'https://github.com/busytex/busytex/releases/latest'
+      busytexreleasetag:
+        description: 'busytex release tag for core assets (latest is default)'
+        required: false
       
-      busytexubuntureleaseurl:
-        description: 'busytex release url for ubuntu assets'
+      busytexubuntureleasetag:
+        description: 'busytex release tag for ubuntu assets'
         required: true
-        default: 'https://github.com/busytex/busytex/releases/tag/release_88f12c721278c652c9fb69c6a097af9481a2ae7e'
+        default: 'release_88f12c721278c652c9fb69c6a097af9481a2ae7e'
       
-      busyidereleaseurl:
-        description: 'busyide release url'
-        required: true
-        default: 'https://github.com/busytex/busyide/releases/latest'
+      busyidereleasetag:
+        description: 'busyide release tag (latest is default)'
+        required: false
 
 jobs:
 
@@ -47,8 +46,10 @@ jobs:
       - name: Download Release Assets from https://github.com/busytex/busytex
         run: |
           mkdir -p dist
-          wget -P dist -N $(printf "${{ github.event.inputs.busytexreleaseurl }}/download/%s " $BUSYTEX_ASSETS_CORE)
-          wget -P dist -N $(printf "${{ github.event.inputs.busytexubuntureleaseurl }}/download/%s " $BUSYTEX_ASSETS_UBUNTU)
+          if [ ! "${{ github.event.inputs.busytexreleasetag }}" ]; then RELEASEURL="$BUSYTEX_RELEASES_URL/latest/download"; else RELEASEURL="$BUSYTEX_RELEASES_URL/download/${{ github.event.inputs.busytexreleasetag }}"; fi
+          wget -P dist -N $(printf "$RELEASEURL/%s " $BUSYTEX_ASSETS_CORE)
+          if [ ! "${{ github.event.inputs.busytexubuntureleasetag }}" ]; then RELEASEURL="$BUSYTEX_RELEASES_URL/latest/download"; else RELEASEURL="$BUSYTEX_RELEASES_URL/download/${{ github.event.inputs.busytexubuntureleasetag }}"; fi
+          wget -P dist -N $(printf "$RELEASEURL/%s " $BUSYTEX_ASSETS_UBUNTU)
           
           git clone https://github.com/busytex/busytex --branch ${{ github.event.inputs.busytexref }} --single-branch --depth 1 busytex
           cp $(printf "busytex/%s " $BUSYTEX_FILES) dist
@@ -57,7 +58,8 @@ jobs:
       - name: Download Release Assets and Files from https://github.com/busyide/busyide
         run: |
           mkdir -p dist
-          wget -P dist -N $(printf "${{ github.event.inputs.busyidereleaseurl }}/download/%s " $BUSYIDE_ASSETS)
+          if [ ! "${{ github.event.inputs.busyidereleasetag }}" ]; then RELEASEURL="$BUSYIDE_RELEASES_URL/latest/download"; else RELEASEURL="$BUSYTEX_RELEASES_URL/download/${{ github.event.inputs.busyidereleasetag }}"; fi
+          wget -P dist -N $(printf "$RELEASEURL/%s " $BUSYIDE_ASSETS)
           
           git clone https://github.com/busytex/busyide --branch ${{ github.event.inputs.busyideref }} --single-branch --depth 1 busyide
           cp $(printf "busyide/%s " $BUSYIDE_FILES) .
