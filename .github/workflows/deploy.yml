@@ -49,7 +49,7 @@ jobs:
           if [ ! "${{ github.event.inputs.busytexreleasetag }}" ]; then RELEASEURL="$BUSYTEX_RELEASES_URL/latest/download"; else RELEASEURL="$BUSYTEX_RELEASES_URL/download/${{ github.event.inputs.busytexreleasetag }}"; fi
           wget -P dist -N $(printf "$RELEASEURL/%s " $BUSYTEX_ASSETS_CORE)
           if [ ! "${{ github.event.inputs.busytexubuntureleasetag }}" ]; then RELEASEURL="$BUSYTEX_RELEASES_URL/latest/download"; else RELEASEURL="$BUSYTEX_RELEASES_URL/download/${{ github.event.inputs.busytexubuntureleasetag }}"; fi
-          wget -P dist $(printf "$RELEASEURL/%s " $BUSYTEX_ASSETS_UBUNTU)
+          wget -P dist -N $(printf "$RELEASEURL/%s " $BUSYTEX_ASSETS_UBUNTU)
           
           git clone https://github.com/busytex/busytex --branch ${{ github.event.inputs.busytexref }} --single-branch --depth 1 busytex
           cp $(printf "busytex/%s " $BUSYTEX_FILES) dist
