@@ -63,7 +63,7 @@
   <link rel="assets" href="https://github.githubassets.com/">
   
 
-  <meta name="request-id" content="07C5:44AE:2C13EC7:400512A:5FDA30E3" data-pjax-transient="true"/><meta name="html-safe-nonce" content="9bc2b54a2237aea937f9fcf1c7c5e0945832b11c8fa546bd9c30420c143303c4" data-pjax-transient="true"/><meta name="visitor-payload" content="eyJyZWZlcnJlciI6IiIsInJlcXVlc3RfaWQiOiIwN0M1OjQ0QUU6MkMxM0VDNzo0MDA1MTJBOjVGREEzMEUzIiwidmlzaXRvcl9pZCI6IjYyOTc4MDY3Njk0NzM1NzkyMyIsInJlZ2lvbl9lZGdlIjoiaWFkIiwicmVnaW9uX3JlbmRlciI6ImlhZCJ9" data-pjax-transient="true"/><meta name="visitor-hmac" content="45fb49868f15f4be8adb8c2476d91ff205e7d5445e41a46f0e75261a9ffb6991" data-pjax-transient="true"/><meta name="cookie-consent-required" content="false" data-pjax-transient="true"/>
+  <meta name="request-id" content="0405:01AD:12C9FF4:1F1FB4D:5FDA327A" data-pjax-transient="true"/><meta name="html-safe-nonce" content="0526713f633ecec9388cc2cc07be36b199fc2a6d704702eb531e9d4dedc1e561" data-pjax-transient="true"/><meta name="visitor-payload" content="eyJyZWZlcnJlciI6IiIsInJlcXVlc3RfaWQiOiIwNDA1OjAxQUQ6MTJDOUZGNDoxRjFGQjREOjVGREEzMjdBIiwidmlzaXRvcl9pZCI6IjU0MjgwMjgyMjA2MDMyNDkyNzQiLCJyZWdpb25fZWRnZSI6ImlhZCIsInJlZ2lvbl9yZW5kZXIiOiJpYWQifQ==" data-pjax-transient="true"/><meta name="visitor-hmac" content="fe8c426aac6f67082e7ce2b0d04087f69f34de9d938a8ccd8de2cf28b50fa06c" data-pjax-transient="true"/><meta name="cookie-consent-required" content="false" data-pjax-transient="true"/>
 
     <meta name="hovercard-subject-tag" content="repository:301110516" data-pjax-transient>
 
@@ -307,7 +307,7 @@
           spellcheck="false"
           autocomplete="off"
           >
-          <input type="hidden" data-csrf="true" class="js-data-jump-to-suggestions-path-csrf" value="IITXcJaYIigKnrokwqivD3gIC75tQX6gFF7NMRg2VrOy1OO9/J97WM027xzjxJmPMxftBkMbhFkhpzbsHCRGjA==" />
+          <input type="hidden" data-csrf="true" class="js-data-jump-to-suggestions-path-csrf" value="IwOXbYRGHlAHMMbvHsGotBBQC3KlrbToGAygq2wes5ILwA20G/RchFnG83AjRKYVp04DkQd2Uu4tdaD5rP4fiQ==" />
           <input type="hidden" class="js-site-search-type-field" name="type" >
             <img src="https://github.githubassets.com/images/search-key-slash.svg" alt="" class="mr-2 header-search-key-slash">
 
@@ -714,7 +714,7 @@
         </li>
         <li class="mt-3">
           
-<details class="details-reset details-overlay select-menu" id="tag-select-menu-e0b5a3b8-3fb8-11eb-8ef1-75e2bb25a47b">
+<details class="details-reset details-overlay select-menu" id="tag-select-menu-d31a38d0-3fb9-11eb-98a2-cb149275394e">
   <summary class="btn btn-sm select-menu-button text-md-left" title="Compare">
     <i>Compare</i>
   </summary>
@@ -727,12 +727,12 @@
     <div class="select-menu-filters">
       <remote-input class="select-menu-text-filter"
         src="/busytex/busytex/compare/tag-list?range=release_88f12c721278c652c9fb69c6a097af9481a2ae7e&amp;tag_name=release_88f12c721278c652c9fb69c6a097af9481a2ae7e&amp;type=base"
-        aria-owns="tags-menu-e0b5a3b8-3fb8-11eb-8ef1-75e2bb25a47b">
+        aria-owns="tags-menu-d31a38d0-3fb9-11eb-98a2-cb149275394e">
         <input type="text" class="form-control" aria-label="Find a tag" placeholder="Find a tag" autofocus>
       </remote-input>
     </div>
 
-    <div class="select-menu-list" id="tags-menu-e0b5a3b8-3fb8-11eb-8ef1-75e2bb25a47b">
+    <div class="select-menu-list" id="tags-menu-d31a38d0-3fb9-11eb-98a2-cb149275394e">
       <div class="p-2">Search for a tag</div>
     </div>
   </details-menu>
@@ -767,7 +767,7 @@
           </li>
           <li>
             
-<details class="details-reset details-overlay select-menu" id="tag-select-menu-e0b5be84-3fb8-11eb-8061-3bc8c3327db1">
+<details class="details-reset details-overlay select-menu" id="tag-select-menu-d31a49d8-3fb9-11eb-9a31-c6d9ed25683d">
   <summary class="btn btn-sm select-menu-button text-md-left" title="Compare">
     <i>Compare</i>
   </summary>
@@ -780,12 +780,12 @@
     <div class="select-menu-filters">
       <remote-input class="select-menu-text-filter"
         src="/busytex/busytex/compare/tag-list?range=release_88f12c721278c652c9fb69c6a097af9481a2ae7e&amp;tag_name=release_88f12c721278c652c9fb69c6a097af9481a2ae7e&amp;type=base"
-        aria-owns="tags-menu-e0b5be84-3fb8-11eb-8061-3bc8c3327db1">
+        aria-owns="tags-menu-d31a49d8-3fb9-11eb-9a31-c6d9ed25683d">
         <input type="text" class="form-control" aria-label="Find a tag" placeholder="Find a tag" autofocus>
       </remote-input>
     </div>
 
-    <div class="select-menu-list" id="tags-menu-e0b5be84-3fb8-11eb-8061-3bc8c3327db1">
+    <div class="select-menu-list" id="tags-menu-d31a49d8-3fb9-11eb-9a31-c6d9ed25683d">
       <div class="p-2">Search for a tag</div>
     </div>
   </details-menu>
