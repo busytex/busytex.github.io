@@ -4,7 +4,7 @@ env:
     BUSYTEX_FILES: busytex_pipeline.js busytex_worker.js
     BUSYTEX_ASSETS_CORE: busytex.wasm busytex.js texlive-basic.js texlive-basic.data
     BUSYTEX_ASSETS_UBUNTU: ubuntu-texlive-latex-base.data ubuntu-texlive-latex-base.js ubuntu-texlive-latex-extra.data ubuntu-texlive-latex-extra.js ubuntu-texlive-latex-recommended.data ubuntu-texlive-latex-recommended.js
-    BUSYIDE_ASSETS: busy.js 
+    BUSYIDE_ASSETS: busyide.js 
     BUSYIDE_FILES: shell.js guthub.js sha1.js index.html readme.tex monarch_lang.json monarch_latex.json monarch_bibtex.json logo.png logo.svg
 
 on: 
