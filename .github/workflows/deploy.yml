@@ -45,11 +45,13 @@ jobs:
       
       - name: Download Release Assets from https://github.com/busytex/busytex
         run: |
+          rm -rf *
           mkdir -p dist
+
           if [ ! "${{ github.event.inputs.busytexreleasetag }}" ]; then RELEASEURL="$BUSYTEX_RELEASES_URL/latest/download"; else RELEASEURL="$BUSYTEX_RELEASES_URL/download/${{ github.event.inputs.busytexreleasetag }}"; fi
-          wget -P dist -N $(printf "$RELEASEURL/%s " $BUSYTEX_ASSETS_CORE)
+          wget -P dist $(printf "$RELEASEURL/%s " $BUSYTEX_ASSETS_CORE)
           if [ ! "${{ github.event.inputs.busytexubuntureleasetag }}" ]; then RELEASEURL="$BUSYTEX_RELEASES_URL/latest/download"; else RELEASEURL="$BUSYTEX_RELEASES_URL/download/${{ github.event.inputs.busytexubuntureleasetag }}"; fi
-          wget -P dist -N $(printf "$RELEASEURL/%s " $BUSYTEX_ASSETS_UBUNTU)
+          wget -P dist $(printf "$RELEASEURL/%s " $BUSYTEX_ASSETS_UBUNTU)
           
           git clone https://github.com/busytex/busytex --branch ${{ github.event.inputs.busytexref }} --single-branch --depth 1 busytex
           cp $(printf "busytex/%s " $BUSYTEX_FILES) dist
@@ -57,9 +59,8 @@ jobs:
       
       - name: Download Release Assets and Files from https://github.com/busyide/busyide
         run: |
-          mkdir -p dist
           if [ ! "${{ github.event.inputs.busyidereleasetag }}" ]; then RELEASEURL="$BUSYIDE_RELEASES_URL/latest/download"; else RELEASEURL="$BUSYTEX_RELEASES_URL/download/${{ github.event.inputs.busyidereleasetag }}"; fi
-          wget -P dist -N $(printf "$RELEASEURL/%s " $BUSYIDE_ASSETS)
+          wget -P dist $(printf "$RELEASEURL/%s " $BUSYIDE_ASSETS)
           
           git clone https://github.com/busytex/busyide --branch ${{ github.event.inputs.busyideref }} --single-branch --depth 1 busyide
           cp $(printf "busyide/%s " $BUSYIDE_FILES) .
