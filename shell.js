@@ -13,6 +13,7 @@ export class Shell
         this.readme_dir = this.home_dir + '/readme';
         this.readme_tex = this.readme_dir + '/readme.tex';
 
+        this.shared_project = '/home/web_user/shared_project';
         this.pdf_path = '/tmp/pdf_does_not_exist_yet';
         this.log_path = '/tmp/log_does_not_exist_yet';
         this.tex_path = '';
@@ -38,7 +39,7 @@ export class Shell
         this.basename = path => path.slice(path.lastIndexOf('/') + 1);
         
         const cmd = (...parts) => parts.join(' ');
-        this.ui.clone.onclick = () => this.commands('cd', cmd('clone', ui.github_https_path.value), cmd('open', this.basename(ui.github_https_path.value)), cmd('cd', this.basename(ui.github_https_path.value)));
+        this.ui.clone.onclick = () => this.commands('cd', cmd('clone', ui.github_https_path.value), cmd('open', this.PATH.join2(this.home_dir, this.basename(ui.github_https_path.value))), cmd('cd', this.basename(ui.github_https_path.value)));
         this.ui.download_pdf.onclick = () => this.commands(cmd('download', this.pdf_path));
         this.ui.view_log.onclick = () => this.commands(cmd('open', this.log_path));
         this.ui.view_pdf.onclick = () => this.commands(cmd('open', this.pdf_path));
@@ -298,7 +299,7 @@ export class Shell
         else if(route.length > 1 && route[0] == 'inline')
         {
             const files = this.deserialize_project(route[1]);
-            const project_dir = '/home/web_user/anonymous_project';
+            const project_dir = this.shared_project;
             this.FS.mkdir(project_dir)
 
             let dirs = new Set(['/', project_dir]);
@@ -348,7 +349,7 @@ export class Shell
                 const main_files = files.filter(f => f.path.includes('main'));
                 default_path = main_files.length > 0 ? main_files[0].path : files[0].path;
             }
-            file_path = default_path;
+            file_path = default_path != null ? this.PATH.join2(file_path, default_path) : null;
         }
 
         if(file_path == null && contents == null)
