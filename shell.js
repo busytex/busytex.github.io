@@ -14,6 +14,7 @@ export class Shell
         this.cache_dir = '/cache';
         this.readme_dir = this.home_dir + '/readme';
         this.readme_tex = this.readme_dir + '/readme.tex';
+        this.hello_world = "\\documentclass[11pt]{article}\n\\begin{document}\n\n\\title{Hello}\n\\maketitle\n\n\\section{world}\nindeed!\n\n\\end{document}";
 
         this.shared_project = '/home/web_user/shared_project';
         this.pdf_path = '/tmp/pdf_does_not_exist_yet';
@@ -22,7 +23,7 @@ export class Shell
         this.zip_path = '/tmp/archive.zip';
         this.current_terminal_line = '';
         this.text_extensions = ['.tex', '.bib', '.txt', '.svg', '.sh', '.py', '.csv'];
-        this.busybox_applets = ['nanozip', 'diff3', 'find', 'mkdir', 'pwd', 'ls', 'echo', 'cp', 'mv', 'rm', 'du', 'tar', 'touch', 'whoami', 'wc', 'cat', 'head'];
+        this.busybox_applets = ['nanozip', 'diff3', 'busybox', 'find', 'mkdir', 'pwd', 'ls', 'echo', 'cp', 'mv', 'rm', 'du', 'tar', 'touch', 'whoami', 'wc', 'cat', 'head'];
         this.tic_ = 0;
         this.FS = null;
         this.PATH = null;
@@ -52,9 +53,14 @@ export class Shell
         this.ui.compile.onclick = () => this.commands(cmd('latexmk', arg(this.tex_path)));
         this.ui.man.onclick = () => this.commands('man');
         this.ui.share.onclick = () => this.commands(chain(cmd('share', arg(this.project_dir()), '>', this.share_link_log), cmd('open', arg(this.share_link_log))));
+        this.ui.new_file.onclick = () => this.commands(chain(cmd('echo', this.hello_world, '>', 'newfile.tex'), cmd('open', 'newfile.tex')));
         //this.ui.pull.onclick = () => this.commands('cd ~/readme', 'ls');
-        this.ui.github_https_path.onkeypress = ev => ev.keyCode == 13 ? this.ui.clone.click() : null;
-        this.ui.filetree.onchange = ev => {console.log(ev); this.open(this.ui.filetree.options[this.ui.filetree.selectedIndex].text)};
+        this.ui.github_https_path.onkeypress = ev => ev.key == 'Enter' ? this.ui.clone.click() : null;
+        this.ui.filetree.onchange = ev => this.open(this.ui.filetree.options[this.ui.filetree.selectedIndex].className != 'filetreedirectory' ? this.ui.filetree.options[this.ui.filetree.selectedIndex].value : '');
+        this.ui.filetree.ondblclick = ev => this.ui.filetree.options[this.ui.filetree.selectedIndex].className == 'filetreedirectory' ? this.cd(this.ui.filetree.options[this.ui.filetree.selectedIndex].value, true) : null;
+        this.ui.filetree.onkeydown = ev => ev.key == 'Enter' ? this.ui.filetree.ondblclick() : null;
+        this.ui.current_file.onclick = () => this.ui.toggle_current_file_rename();
+        this.ui.current_file_rename.onkeydown = ev => ev.key == 'Enter' ? (this.mv(this.ui.get_current_file(), this.ui.current_file_rename.value) || this.ui.set_current_file(this.ui.current_file_rename.value) || this.ui.toggle_current_file_rename()) : ev.key == 'Escape' ? (this.ui.set_current_file(this.ui.get_current_file()) || this.ui.toggle_current_file_rename()) : null;
 		
 		editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, this.ui.compile.onclick);
     }
@@ -102,8 +108,7 @@ export class Shell
     serialize_project(project_dir)
     {
         //TODO: filter out artefacts
-        const files = this.ls_R(project_dir);
-        return btoa(JSON.stringify(files));
+        return btoa(JSON.stringify(this.ls_R(project_dir)));
     }
 
     deserialize_project(project_str)
@@ -170,13 +175,13 @@ export class Shell
                     else if(cmd == 'clear')
                         this.clear();
                     else if(this.busybox_applets.includes(cmd))
-                        this.terminal_print(this.busybox.run([cmd, ...args]).stdout);
+                        print_or_dump(this.busybox.run([cmd, ...args]).stdout);
                     else if(cmd == 'man')
                         this.man();
                     else if(cmd == 'share')
                         print_or_dump(this.share(...args));
                     else if(cmd == 'help')
-                        this.terminal_print(this.help().join(' '));
+                        this.terminal_print(this.help().join('\t'));
                     else if(cmd == 'download')
                         this.download(...args);
                     else if(cmd == 'upload')
@@ -312,9 +317,24 @@ export class Shell
         this.terminal_prompt();
     }
 
+    mv(src_file_path, dst_file_path)
+    {
+
+    }
+
     open(file_path, contents)
     {
-        if(this.FS.isDir(this.FS.lookupPath(file_path).node.mode))
+        if(file_path == '')
+        {
+            this.tex_path = '';
+            this.ui.txtpreview.value = '';
+            this.ui.set_current_file('');
+            this.editor.getModel().setValue('');
+            [this.ui.imgpreview.hidden, this.ui.pdfpreview.hidden, this.ui.txtpreview.hidden] = [true, true, false];
+            return;
+        }
+        
+        if(this.FS.analyzePath(file_path).exists && this.FS.isDir(this.FS.lookupPath(file_path).node.mode))
         {
             const files = this.ls_R(file_path, '', false).filter(f => f.path.endsWith('.tex') && f.contents != null);
             let default_path = null;
@@ -363,7 +383,7 @@ export class Shell
         else
         {
             contents = contents || this.FS.readFile(file_path, {encoding : 'utf8'});
-            this.ui.current_file.textContent = 'editing [' + this.PATH.basename(file_path) + ']';
+            this.ui.set_current_file(this.PATH.basename(file_path));
             this.editor.getModel().setValue(contents);
         }
     }
@@ -419,28 +439,37 @@ export class Shell
         this.OLDPWD = this.FS.cwd();
         this.FS.chdir(this.expandcollapseuser(path || '~'));
         if(update_file_tree)
-            this.ui.update_file_tree(this.ls_R());
+            this.ui.update_file_tree(this.ls_R('.', '', false, true, true));
     }
 
-    ls_R(root = '.', relative_dir_path = '', recurse = true, exclude = ['.git'])
+    ls_R(root = '.', relative_dir_path = '', recurse = true, preserve_directories = false, include_parent_directories = false, exclude = ['.git'])
     {
         let entries = [];
+        if(include_parent_directories)
+        {
+            entries.push({path : this.PATH.join2(root, '..'), name : '..'});
+        }
         for(const [name, entry] of Object.entries(this.FS.lookupPath(`${root}/${relative_dir_path}`, {parent : false}).node.contents))
         {
             const relative_path = relative_dir_path ? this.PATH.join2(relative_dir_path, name) : name;
             const absolute_path = this.PATH.join2(root, relative_path);
             if(entry.isFolder)
             {
-                //entries.push({path : relative_path}, ...this.ls_R(root, relative_path));
-                if(recurse && !exclude.includes(name))
-                    entries.push(...this.ls_R(root, relative_path));
+                if(!exclude.includes(name))
+                {
+                    if(preserve_directories)
+                        entries.push({path : relative_path, name : name});
+                    if(recurse)
+                        entries.push(...this.ls_R(root, relative_path));
+                }
             }
             else if(absolute_path != this.log_path && absolute_path != this.pdf_path)
             {
                 const read_text = this.text_extensions.map(ext => absolute_path.endsWith(ext)).includes(true);
-                entries.push({path : relative_path, contents : this.FS.readFile(absolute_path, {encoding : read_text ? 'utf8' : 'binary'})});
+                entries.push({path : relative_path, name : name, contents : this.FS.readFile(absolute_path, {encoding : read_text ? 'utf8' : 'binary'})});
             }
         }
+        console.log(root, entries);
         return entries;
     }
 
