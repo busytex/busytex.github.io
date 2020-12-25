@@ -6,7 +6,7 @@
 //
 export class Guthub
 {
-    constructor(sha1, FS, diff3, cache_dir, print)
+    constructor(sha1, FS, cache_dir, merge, print)
     {
         this.retry_delay_seconds = 2;
         this.auth_token = '';
@@ -14,14 +14,17 @@ export class Guthub
         this.FS = FS;
         this.cache_dir = cache_dir;
         this.github_contents = '.git/githubapicontents.json';
-        this.diff3 = diff3;
+        this.merge = merge;
         this.sha1 = sha1;
+        this.df13_diff = '/tmp/df13.diff';
+        this.df23_diff = '/tmp/df23.diff';
     }
 
     github_api_request(https_path, relative_url, method, body)
     {
         const api = https_path.replace('github.com', 'api.github.com/repos');
-        return fetch(api + relative_url, Object.assign({method : method || 'get', headers : Object.assign({Authorization : 'Basic ' + btoa(this.auth_token)}, body != null ? {'Content-Type' : 'application/json'} : {})}, body != null ? {body : JSON.stringify(body)} : {}));
+        const headers = Object.assign({Authorization : 'Basic ' + btoa(this.auth_token), 'If-None-Match' : ''}, body != null ? {'Content-Type' : 'application/json'} : {});
+        return fetch(api + relative_url, Object.assign({method : method || 'get', headers : headers}, body != null ? {body : JSON.stringify(body)} : {}));
     }
 
     read_https_path()
@@ -42,11 +45,6 @@ export class Guthub
         this.FS.writeFile(repo_path + '/' + this.github_contents, JSON.stringify(repo));
     }
 
-    merge(ours_path, parent_path, theirs_path)
-    {
-        return this.diff3(['--merge', ours_path, parent_path, theirs_path]);
-    }
-
     object_path(file)
     {
         return '.git/objects/' + file.sha.slice(0, 2) + '/' + file.sha.slice(2);
@@ -60,12 +58,13 @@ export class Guthub
         this.FS.writeFile(obj_path, contents);
     }
 
-    async pull()
+    async pull(repo_path = '.')
     {
         const https_path = this.read_https_path();
         this.print(`Pulling from '${https_path}'...`);
         
         const prev = this.read_githubcontents();
+        console.log('prev', prev);
         
         const resp = await this.github_api_request(https_path, '/contents');
         const repo = await resp.json();
@@ -76,6 +75,7 @@ export class Guthub
             const file = Q.pop();
             if(file.type == 'file')
             {
+                this.print('processing: ' + file.path);
                 const prev_files = prev.filter(f => f.path == file.path);
                 if(!this.FS.analyzePath(file.path).exists)
                 {
@@ -83,19 +83,22 @@ export class Guthub
                     this.FS.writeFile(file_path, contents);
                     this.print('new: ' + file_path)
                 }
-                else if(prev_files.length > 0 && prev[0].sha != file.sha) 
+                else if(prev_files.length > 0 && prev_files[0].sha != file.sha) 
                 {
+                    const ours_path = file.path;
+                    this.print('merging: ' + ours_path);
+                    
                     const contents = await this.load_file(file.path, file);
                     const theirs_path = this.object_path(file);
                     this.save_object(theirs_path, contents);
 
-                    const ours_path = file.path;
-                    const old_file = prev[file.path];
+                    const old_file = prev_files[0];
                     const old_path = this.object_path(old_file);
-                    const merged = this.merge(ours_path, old_path, theirs_path);
-                    this.FS.writeFile(file_path, merged);
-                    this.print('merged: ' + file_path);
+                    this.merge(ours_path, theirs_path, old_path);
+                    this.print('merged: ' + ours_path);
                 }
+                else
+                  this.print('skipping: ' + file.path);
             }
             else if(file.type == 'dir')
             {
@@ -123,9 +126,12 @@ export class Guthub
         }
         else
         {
-            this.print(`Downloading [${file_path}] from [${file.download_url}] and caching in [${cached_file_path}]`);
-            const resp = await fetch(file.download_url);
-            contents = new Uint8Array(await resp.arrayBuffer());
+            this.print(`Downloading [${file_path}] from [${file.git_url}] and caching in [${cached_file_path}]`);
+            const resp = await fetch(file.git_url).then(r => r.json());
+            console.assert(resp.encoding == 'base64');
+            contents = Uint8Array.from(atob(resp.content), v => v.charCodeAt());
+            //const resp = await fetch(file.download_url).then(r => r.arrayBuffer());
+            //contents = new Uint8Array(await resp);
             this.FS.writeFile(cached_file_path, contents, {encoding: 'binary'});
             if(contents.encoding == 'utf8')
                 contents = this.FS.readFile(cached_file_path, opts);
