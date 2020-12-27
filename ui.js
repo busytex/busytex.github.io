@@ -42,7 +42,7 @@ export class Shell
         this.terminal_reset_sequence = '\x1bc';
         
         this.compiler.onmessage = this.oncompilermessage.bind(this);
-        this.terminal.on('key', this.onkey.bind(this));
+        this.terminal.onKey(this.onkey.bind(this));
 
         const cmd = (...parts) => parts.join(' ');
         const arg = path => this.expandcollapseuser(path, false);
@@ -87,8 +87,8 @@ export class Shell
     async type(cmd)
     {
         for(const c of cmd)
-            await this.onkey(c, {key : null});
-        await this.onkey('', {key : 'Enter'});
+            await this.onkey({key : c, domEvent: {key : null}});
+        await this.onkey({key : '', domEvent: {key : 'Enter'}});
     }
 
     terminal_print(line, newline = '\r\n')
@@ -101,9 +101,9 @@ export class Shell
         return this.terminal.write('\x1B[1;3;31mbusytex\x1B[0m:' + this.pwd(true) + '$ ');
     }
     
-    async onkey(key, ev)
+    async onkey({key, domEvent})
     {
-        if(ev.key == 'Backspace')
+        if(domEvent.key == 'Backspace')
         {
             if(this.current_terminal_line.length > 0)
             {
@@ -111,7 +111,7 @@ export class Shell
                 this.terminal.write('\b \b');
             }
         }
-        else if(ev.key == 'Enter')
+        else if(domEvent.key == 'Enter')
         {
             this.terminal_print();
             await this.shell(this.current_terminal_line);
@@ -477,13 +477,15 @@ export class Shell
         this.ui.create_and_click_download_link(this.PATH.basename(file_path), content, mime);
     }
     
-    merge(ours_path, theirs_path, parent_path, df13_diff = '/tmp/df13.diff', df23_diff = '/tmp/df23.diff')
+    merge(ours_path, theirs_path, parent_path, df13_diff = '/tmp/df13.diff', df23_diff = '/tmp/df23.diff', conflict_left = '<<<<<<<', conflict_right = '>>>>>>>')
     {
         const [f1, f2, f3] = [ours_path, parent_path, theirs_path];
         this.FS.writeFile(df13_diff, this.busybox.run(['bsddiff', f1, f3]).stdout_);
         this.FS.writeFile(df23_diff, this.busybox.run(['bsddiff', f2, f3]).stdout_);
         const edscript = this.busybox.run(['bsddiff3prog', '-E', df13_diff, df23_diff, f1, f2, f3]).stdout_ + 'w';
         this.busybox.run(['ed', ours_path], edscript);
+        const merged = FS.readFile(ours_path, {encoding : 'utf8'});
+        return merged.includes(conflict_left) && merged.includes(conflict_right);
     }
 
     ls_R(root = '.', relative_dir_path = '', recurse = true, preserve_directories = false, include_parent_directories = false, read_contents_as_string = true, exclude = ['.git'])
