@@ -359,7 +359,7 @@ export class Shell
         if(token == '')
         {
             this.terminal_print(`Searching token cache for '${https_path}'...`);
-            token = this.cache_token('get', this.ui.github_https_path.value);
+            token = await this.cache_token('get', this.ui.github_https_path.value);
             this.ui.github_token.value = token;
             token_cached = token != '';
             this.terminal_print(token_cached ? `Token found [${token}] in cache...` : 'Token not found in cache...');
@@ -384,7 +384,7 @@ export class Shell
         if(!token_cached && token != '')
         {
             this.terminal_print(`Caching for '${https_path}' token [${token}]...`);
-            this.cache_tokenadd(https_path, token);
+            await this.cache_token('add', https_path, token);
         }
         
         await this.cache_save();
