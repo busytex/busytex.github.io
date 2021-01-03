@@ -68,8 +68,9 @@ export class Github
 
     async pull(repo_path = '.')
     {
+        let res = [];
+
         const https_path = this.read_https_path();
-        this.print(`Pulling from '${https_path}'...`);
         
         const prev = this.read_githubcontents();
         console.log('prev', prev);
@@ -83,17 +84,16 @@ export class Github
             const file = Q.pop();
             if(file.type == 'file')
             {
-                this.print('processing: ' + file.path);
                 const prev_files = prev.filter(f => f.path == file.path);
                 if(!this.FS.analyzePath(file.path).exists)
                 {
                     const contents = await this.load_file(file.path, file);
                     this.FS.writeFile(file_path, contents);
-                    this.print('deleted: ' + file_path)
+                    res.push({path: file_path, status : 'deleted'});
                 }
                 
                 else if(prev_files.length > 0 && prev_files[0].sha == file.sha) 
-                  this.print('nothing to merge: ' + file.path);
+                    res.push({path: file.path, status : 'not modified'});
                 
                 else if(prev_files.length > 0 && prev_files[0].sha != file.sha) 
                 {
@@ -106,7 +106,7 @@ export class Github
                     const old_file = prev_files[0];
                     const old_path = this.object_path(old_file);
                     const conflicted = this.merge(ours_path, theirs_path, old_path);
-                    this.print((conflicted ? 'conflicted: ' : 'merged: ') + ours_path);
+                    res.push({path: ours_path, status : conflicted ? 'conflict' : 'merged'});
                 }
             }
             else if(file.type == 'dir')
@@ -121,6 +121,7 @@ export class Github
             }
         }
         this.save_githubcontents(repo_path, repo);
+        return res;
     }
     
     async load_file(file_path, file, opts)

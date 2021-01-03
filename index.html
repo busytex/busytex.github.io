@@ -139,9 +139,9 @@
             <input type="text" style="width: 250px" id="github_https_path" placeholder="GitHub https link"></input>
             <input type="text" style="width: 100px" id="github_token" placeholder="GitHub token" title="for private clone/push"></input>
             <button id="clone">Clone</button>
-            <button id="cache_tokenpurge">Purge Token Cache</button>
-            <button id="pull" hidden>Pull</button>
+            <button id="pull">Pull</button>
             <button id="push">Commit &amp; Force Push</button>
+            <button id="cache_tokenpurge">Purge Token Cache</button>
             <input id="github_release" hidden type="text" style="width: 100px" placeholder="Publish Release Name" title="for publishing a PDF into a release"></input>
             <button id="publish" hidden>Publish PDF</button>
         </div>
@@ -168,13 +168,27 @@
         <textarea hidden id="txtpreview"></textarea>
         <figure hidden id="gitstatus">
             <figcaption>[git status]</figcaption>
-            <table id="gitmodified">
+            <table id="gittatusmodified">
                 <thead><tr><th>path</th><th>status</th></tr></thead>
                 <tbody></tbody>
             </table>
             <details>
                 <summary>Not modified</summary>
-                <table id="gitnotmodified">
+                <table>
+                    <thead><tr><th>path</th><th>status</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </details>
+        </figure>
+        <figure hidden id="gitpull">
+            <figcaption>[git pull]</figcaption>
+            <table id="gitpullmodified">
+                <thead><tr><th>path</th><th>status</th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <details>
+                <summary>Not modified</summary>
+                <table>
                     <thead><tr><th>path</th><th>status</th></tr></thead>
                     <tbody></tbody>
                 </table>
@@ -275,6 +289,7 @@ const ui =
     pdfpreview : document.getElementById('pdfpreview'),
     txtpreview : document.getElementById('txtpreview'),
     gitstatus : document.getElementById('gitstatus'),
+    gitpull : document.getElementById('gitpull'),
     fileupload : document.getElementById('fileupload'),
     editor : document.getElementById('editor'),
     terminal : document.getElementById('terminal'),
@@ -327,41 +342,49 @@ const ui =
         [span.hidden, input.hidden] = [!span.hidden, !input.hidden];
     },
 
+    update_tbody(tbody, st)
+    {
+        tbody.innerHTML = '';
+        for(const {path, status} of st)
+        {
+            const tr = tbody.insertRow();
+            let tc = tr.insertCell();
+            tc.appendChild(document.createTextNode(path));
+            tc = tr.insertCell();
+            tc.appendChild(document.createTextNode(status));
+        }
+    },
+
     update_git_status(modified, notmodified)
     {
-        const table_modified = ui.gitstatus.querySelector('#gitmodified');
+        const table_modified = ui.gitstatus.querySelector('#gitstatusmodified');
         const details_notmodified = ui.gitstatus.querySelector('details');
         const tbody_modified = table_modified.querySelector('tbody');
         const tbody_notmodified = details_notmodified.querySelector('tbody');
 
         table_modified.hidden = modified.length == 0;
         if(!table_modified.hidden)
-        {
-            tbody_modified.innerHTML = '';
-            for(const {path, status} of modified)
-            {
-                const tr = tbody_modified.insertRow();
-                let tc = tr.insertCell();
-                tc.appendChild(document.createTextNode(path));
-                tc = tr.insertCell();
-                tc.appendChild(document.createTextNode(status));
-            }
-        }
-            
+            this.update_tbody(tbody_modified, modified); 
 
         details_notmodified.hidden = notmodified.length == 0;
         if(!details_notmodified.hidden)
-        {
-            tbody_notmodified.innerHTML = '';
-            for(const {path, status} of notmodified)
-            {
-                const tr = tbody_notmodified.insertRow();
-                let tc = tr.insertCell();
-                tc.appendChild(document.createTextNode(path));
-                tc = tr.insertCell();
-                tc.appendChild(document.createTextNode(status));
-            }
-        }
+            this.update_tbody(tbody_notmodified, notmodified); 
+    },
+    
+    update_git_pull(modified, notmodified)
+    {
+        const table_modified = ui.gitpull.querySelector('#gitpullmodified');
+        const details_notmodified = ui.gitpull.querySelector('details');
+        const tbody_modified = table_modified.querySelector('tbody');
+        const tbody_notmodified = details_notmodified.querySelector('tbody');
+
+        table_modified.hidden = modified.length == 0;
+        if(!table_modified.hidden)
+            this.update_tbody(tbody_modified, modified);
+            
+        details_notmodified.hidden = notmodified.length == 0;
+        if(!details_notmodified.hidden)
+            this.update_tbody(tbody_notmodified, notmodified);
     },
 
     update_file_tree(files, selected_option_text = null)
@@ -445,7 +468,7 @@ const ui =
 
     toggle_viewer(mode)
     {
-        [ui.imgpreview.hidden, ui.pdfpreview.hidden, ui.txtpreview.hidden, ui.gitstatus.hidden] = [mode != 'image', mode != 'pdf', mode != 'text', mode != 'gitstatus'];
+        [ui.imgpreview.hidden, ui.pdfpreview.hidden, ui.txtpreview.hidden, ui.gitstatus.hidden, ui.gitpull.hidden] = [mode != 'image', mode != 'pdf', mode != 'text', mode != 'gitstatus', mode != 'gitpull'];
     }
 };
   
