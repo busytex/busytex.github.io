@@ -204,11 +204,11 @@ export class Shell
     {
         const toString = arg =>
         {
-            if(arg == null)
+            if(arg === '' || arg === null)
                 return '';
-            else if(arg == true)
+            else if(arg === true)
                 return 'ok!';
-            else if(arg == false)
+            else if(arg === false)
                 return 'error!';
             else if(typeof(arg) == 'string')
                 return arg;
@@ -729,7 +729,7 @@ export class Shell
         }
 
         if(archive_path.endsWith('.tar'))
-            console.assert(this.EXIT_SUCCESS == this.busybox.run(['tar', '-xf', archive_path, '-C', project_dir, '--strip-components=1']).exit_code);
+            console.assert(this.EXIT_SUCCESS == this.busybox.run(['tar', '-xf', archive_path, '-C', project_dir, '--strip-components', '1']).exit_code);
         
         if(archive_path.endsWith('.zip'))
             console.assert(this.EXIT_SUCCESS == this.busybox.run(['unzip', archive_path, '-d', project_dir]).exit_code);
