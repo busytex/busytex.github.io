@@ -65,6 +65,7 @@ export class Shell
         this.ui.view_pdf.onclick = () => this.pdf_path && this.commands(cmd('open', arg(this.pdf_path)));
         this.ui.download.onclick = () => this.edit_path && this.commands(cmd('download', arg(this.edit_path)));
         this.ui.upload.onclick = async () => await this.commands('upload');
+        this.ui.uploadimport.onclick = async () => await this.commands('uploadimport');
         this.ui.download_zip.onclick = () => this.commands(chain('cd', cmd('nanozip', '-r', '-x', '.git', '-x', this.log_path, '-x', this.pdf_path, this.zip_path, this.PATH.basename(this.project_dir())), cmd('cd', '-'), cmd('download', arg(this.zip_path))));
         this.ui.compile.onclick = () => this.commands(cmd('latexmk', arg(this.tex_path)));
         this.ui.man.onclick = () => this.commands('man');
@@ -200,15 +201,31 @@ export class Shell
 
     async shell(current_terminal_line)
     {
+        const toString = arg =>
+        {
+            if(arg == null)
+                return '';
+            else if(arg == true)
+                return 'ok!';
+            else if(arg == false)
+                return 'error!';
+            else if(typeof(arg) == 'string')
+                return arg;
+            else if(typeof(arg) == 'number')
+                return arg.toString();
+            else if(Array.isArray(arg))
+                return arg.map(toString).join('\t');
+        };
+
         for(let cmdline of current_terminal_line.split('&&'))
         {
-            let print_or_dump = (str, ...args) => this.terminal_print(str, ...args);
+            let print_or_dump = (arg, ...args) => this.terminal_print(toString(arg), ...args);
             let redirect_or_output = null;
 
             if(cmdline.includes('>'))
             {
                 [cmdline, redirect_or_output] = cmdline.split('>');
-                print_or_dump = str => this.FS.writeFile(redirect_or_output.trim(), str);
+                print_or_dump = arg => this.FS.writeFile(redirect_or_output.trim(), toString(arg));
             }
 
             let [cmd, ...args] = cmdline.trim().split(' ');
@@ -223,17 +240,19 @@ export class Shell
                 else if(this.busybox_applets.includes(cmd))
                     print_or_dump(this.busybox.run([cmd, ...args]).stdout, '');
                 else if(cmd == 'tabs')
-                    print_or_dump(Object.keys(this.tabs).sort().join('\t'));
+                    print_or_dump(Object.keys(this.tabs).sort());
                 else if(cmd == 'dirty')
                     this.ui.set_dirty(true);
                 else if(cmd == 'stoptimer')
-                    this.ui.timer();
+                    this.ui.dirty_timer(false);
                 else if(cmd == 'help')
-                    print_or_dump(this.shell_commands.join('\t'));
+                    print_or_dump(this.shell_commands);
                 else if(cmd == 'git' && args.length == 0)
-                    this.terminal_print(this.git_applets.join('\t'));
+                    print_or_dump(this.git_applets);
+
                 else if(cmd == 'git' && args.length > 0 && this.git_applets.includes(args[0]))
                     await this['git_' + args[0]](...args.slice(1));
+
                 else if(cmd == 'cache' && args.length > 0 && this.cache_applets.includes(args[0]))
                     print_or_dump(await this['cache_' + args[0]](...args.slice(1)));
                 else if(this.shell_builtins.includes(cmd))
@@ -296,10 +315,12 @@ export class Shell
 
         if(github_https_path.length > 0)
         {
+            this.terminal_print('# ', '');
             project_dir = await this.git_clone(github_https_path);
         }
         else if(route[0] == 'arxiv')
         {
+            this.terminal_print('# ', '');
             project_dir = await this.arxiv_clone(route[1]);
         }
         else if(route[0] == 'inline')
@@ -336,6 +357,7 @@ export class Shell
             this.ui.github_https_path.value = route[1];
         }
        
+        this.terminal_prompt();
         if(this.ui.github_https_path.value.length > 0 || route.length > 1)
             await this.init(route, this.ui.github_https_path.value);
         else
@@ -689,6 +711,12 @@ export class Shell
 
         const files = this.ls_R(project_dir);
         this.compiler.postMessage({files : files, main_tex_path : main_tex_path, verbose : verbose});
+    }
+
+    async uploadimport()
+    {
+        // unzip /tmp/imported.zip -d /home/web_user/imported
+        //
     }
 
     async upload(file_path = null)
