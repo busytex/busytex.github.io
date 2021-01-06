@@ -3,7 +3,7 @@ import { Busybox } from '/busybox.js'
 
 export class Shell
 {
-    constructor(ui, paths, readme, terminal, editor, monaco, http_path)
+    constructor(ui, paths, readme, terminal, editor, monaco, http_path, cors_proxy_fmt = 'https://cors-anywhere.herokuapp.com/${url}')
     {
         this.monaco = monaco;
         this.http_path = http_path;
@@ -30,7 +30,7 @@ export class Shell
         this.current_terminal_line = '';
         this.text_extensions = ['.tex', '.bib', '.txt', '.md', '.svg', '.sh', '.py', '.csv'];
         this.busybox_applets = ['nanozip', 'bsddiff3prog', 'bsddiff', 'busybox', 'find', 'mkdir', 'pwd', 'ls', 'echo', 'cp', 'mv', 'rm', 'du', 'tar', 'touch', 'wc', 'cat', 'head', 'clear', 'unzip', 'gzip'];
-        this.shell_builtins =  ['man', 'help', 'open', 'download', 'cd', 'purge', 'latexmk', 'git', 'clear_', 'share', 'upload', 'uploadimport'];
+        this.shell_builtins =  ['man', 'help', 'open', 'download', 'cd', 'purge', 'latexmk', 'git', 'clear_', 'share', 'upload', 'wget', 'archive_clone'];
         this.cache_applets = ['object', 'token'];
         this.git_applets = ['clone', 'pull', 'push', 'status'];
         this.shell_commands = this.shell_builtins.concat(this.busybox_applets).concat(this.git_applets.map(cmd => 'git ' + cmd)).sort();
@@ -52,13 +52,16 @@ export class Shell
         this.EXIT_SUCCESS = 0;
         this.tabs = {};
         this.interval_id = 0;
+        this.HTTP_OK = 200;
+        this.cors_proxy_fmt = cors_proxy_fmt;
+        this.cmd = (...parts) => parts.join(' ');
+        this.arg = path => this.expandcollapseuser(path, false);
+        this.chain = (...cmds) => cmds.join(' && ');
     }
 
     bind()
     {
-        const cmd = (...parts) => parts.join(' ');
-        const arg = path => this.expandcollapseuser(path, false);
-        const chain = (...cmds) => cmds.join(' && ');
+        const {cmd, arg, chain} = this;
         
         this.compiler.onmessage = this.oncompilermessage.bind(this);
         this.terminal.onKey(this.onkey.bind(this));
@@ -70,7 +73,7 @@ export class Shell
         this.ui.view_pdf.onclick = () => this.pdf_path && this.commands(cmd('open', arg(this.pdf_path)));
         this.ui.download.onclick = () => this.edit_path && this.commands(cmd('download', arg(this.edit_path)));
         this.ui.upload.onclick = async () => await this.commands('upload');
-        this.ui.uploadimport.onclick = async () => await this.commands('uploadimport');
+        this.ui.archive_clone.onclick = async () => await this.commands('archive_clone');
         this.ui.download_zip.onclick = () => this.commands(chain('cd', cmd('nanozip', '-r', '-x', '.git', this.zip_path, this.PATH.basename(this.project_dir())), cmd('cd', '-'), cmd('download', arg(this.zip_path))));
         this.ui.compile.onclick = () => this.commands(cmd('latexmk', arg(this.tex_path)));
         this.ui.man.onclick = () => this.commands('man');
@@ -270,25 +273,14 @@ export class Shell
         }
     }
 
-    async arxiv_clone(arxiv_https_path, cors_proxy_fmt = 'https://cors-anywhere.herokuapp.com/${url}', http_ok = 200)
+    async wget(url, _O = '-O', output_path = null)
     {
-        const https_path = arxiv_https_path.replace('/abs/', '/e-print/');
-        const repo_path = arxiv_https_path.split('/').pop();
-        const project_dir = repo_path;
-        
-        this.terminal_print(`Downloading sources '${https_path}' into '${repo_path}'...`);
-        const proxy_path = cors_proxy_fmt.replace('${url}', https_path);
+        output_path = output_path || this.PATH.basename(url);
+        const proxy_path = this.cors_proxy_fmt.replace('${url}', url);
         const resp = await fetch(proxy_path, {headers : {'X-Requested-With': 'XMLHttpRequest'}});
-        console.assert(http_ok == resp.status);
+        console.assert(this.HTTP_OK == resp.status);
         const uint8array = new Uint8Array(await resp.arrayBuffer());
-        this.FS.writeFile(this.arxiv_path, uint8array);
-        
-        this.FS.mkdir(project_dir);
-        const OLDPWD = this.FS.cwd();
-        console.assert(this.EXIT_SUCCESS == this.busybox.run(['tar', '-xf', this.arxiv_path, '-C', project_dir]).exit_code);
-        this.FS.chdir(OLDPWD);
-
-        return project_dir;
+        this.FS.writeFile(output_path, uint8array);
     }
 
     inline_clone(serialized)
@@ -319,14 +311,16 @@ export class Shell
         if(github_https_path.length > 0)
         {
             this.terminal_prompt();
-            this.terminal_print('# ', '');
-            project_dir = await this.git_clone(github_https_path);
+            project_dir = this.github.parse_url(github_https_path).reponame;
+            await this.commands(this.cmd('git', 'clone', github_https_path));
         }
         else if(route[0] == 'arxiv')
         {
             this.terminal_prompt();
-            this.terminal_print('# ', '');
-            project_dir = await this.arxiv_clone(route[1]);
+            project_dir = this.PATH.basename(route[1]);
+            const arxiv_https_path = route[1].replace('/abs/', '/e-print/');
+            
+            await this.commands(this.chain(this.cmd('wget', arxiv_https_path, '-O', this.arxiv_path), this.cmd('mkdir', project_dir), this.cmd('tar', '-xf', this.arxiv_path, '-C', project_dir)));
         }
         else if(route[0] == 'inline')
         {
@@ -713,14 +707,18 @@ export class Shell
         this.compiler.postMessage({files : files, main_tex_path : main_tex_path, verbose : verbose});
     }
 
-    async uploadimport()
+    async archive_clone(archive_path)
     {
-        this.FS.chdir(this.tmp_dir);
-        const paths = await this.upload(null, ['.tar', '.tar.gz', '.zip']);
-        if(paths.length == 0)
-            return;
+        if(archive_path == null)
+        {
+            this.FS.chdir(this.tmp_dir);
+            const paths = await this.upload(null, ['.tar', '.tar.gz', '.zip']);
+            if(paths.length == 0)
+                return;
+            archive_path = paths[0];
+        }
 
-        let archive_path = this.abspath(paths[0]);
+        archive_path = this.abspath(archive_path);
         const basename = this.PATH.basename(archive_path);
         const project_dir = this.PATH.join2(this.home_dir, basename.slice(0, basename.indexOf('.')));
         this.FS.mkdir(project_dir);
@@ -738,6 +736,8 @@ export class Shell
             console.assert(this.EXIT_SUCCESS == this.busybox.run(['unzip', archive_path, '-d', project_dir]).exit_code);
 
         this.FS.unlink(archive_path);
+        
+        this.open(project_dir);
         this.cd(project_dir, true, 1);
     }
 
