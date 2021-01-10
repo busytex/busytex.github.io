@@ -432,17 +432,17 @@ export class Shell
         this.log_big_header('$ git clone ' + https_path); 
         const route = https_path.split('/');
         let repo_path = route.pop();
-        this.terminal_print(`Cloning from '${https_path}' into '${repo_path}'...`);
+        this.log_big(`Cloning from '${https_path}' into '${repo_path}'...`);
         
         let token_cached = false;
         let token = this.ui.github_token.value;
         if(token == '')
         {
-            this.terminal_print(`Searching token cache for '${https_path}'...`);
+            this.log_big(`Searching token cache for '${https_path}'...`);
             token = await this.cache_token('get', this.ui.github_https_path.value);
             this.ui.github_token.value = token;
             token_cached = token != '';
-            this.terminal_print(token_cached ? `Token found [${token}] in cache...` : 'Token not found in cache...');
+            this.log_big(token_cached ? `Token found [${token}] in cache...` : 'Token not found in cache...');
         }
 
         token = token || this.ui.github_token.value;
@@ -639,6 +639,32 @@ export class Shell
             //this.editor.focus();
         };
 
+        const open_viewer_tab = (file_path, contents) =>
+        {
+            const b64encode = uint8array => btoa(uint8array.reduce((acc, i) => acc += String.fromCharCode.apply(null, [i]), ''));
+            if(file_path.endsWith('.log'))
+            {
+                this.ui.txtpreview.value = contents;
+                this.ui.toggle_viewer('text');
+            }
+            else if(file_path.endsWith('.svg'))
+            {
+                this.ui.imgpreview.src = 'data:image/svg+xml;base64,' + b64encode(contents);
+                this.ui.toggle_viewer('image');
+            }
+            else if(file_path.endsWith('.png') || file_path.endsWith('.jpg'))
+            {
+                const ext = file_path.endsWith('.png') ? 'png' : 'jpg';
+                this.ui.imgpreview.src = `data:image/${ext};base64,` + b64encode(contents);
+                this.ui.toggle_viewer('image');
+            }
+            else if(file_path.endsWith('.pdf'))
+            {
+                this.ui.pdfpreview.src = URL.createObjectURL(new Blob([contents], {type: 'application/pdf'}));
+                this.ui.toggle_viewer('pdf');
+            }
+        };
+
         if(file_path == '')
         {
             this.tex_path = '';
@@ -658,7 +684,7 @@ export class Shell
                 if(default_path == null)
                 {
                     const basename = this.PATH.basename(file_path);
-                    this.ui.set_current_file(basename);
+                    this.ui.set_current_file(basename, 'Viewing');
                     open_editor_tab('', '');
                     //this.commands(cmd('git', 'status'));
                     if(basename == '.git')
@@ -686,34 +712,14 @@ export class Shell
         if(file_path.endsWith('.pdf') || file_path.endsWith('.jpg') || file_path.endsWith('.png') || file_path.endsWith('.svg') || file_path.endsWith('.log'))
         {
             contents = contents || (file_path.endsWith('.log') ? this.FS.readFile(file_path, {encoding: 'utf8'}) : this.FS.readFile(file_path, {encoding : 'binary'}));
-            const b64encode = uint8array => btoa(uint8array.reduce((acc, i) => acc += String.fromCharCode.apply(null, [i]), ''));
-            if(file_path.endsWith('.log'))
-            {
-                this.ui.txtpreview.value = contents;
-                this.ui.toggle_viewer('text');
-            }
-            else if(file_path.endsWith('.svg'))
-            {
-                this.ui.imgpreview.src = 'data:image/svg+xml;base64,' + b64encode(contents);
-                this.ui.toggle_viewer('image');
-            }
-            else if(file_path.endsWith('.png') || file_path.endsWith('.jpg'))
-            {
-                const ext = file_path.endsWith('.png') ? 'png' : 'jpg';
-                this.ui.imgpreview.src = `data:image/${ext};base64,` + b64encode(contents);
-                this.ui.toggle_viewer('image');
-            }
-            else if(file_path.endsWith('.pdf'))
-            {
-                this.ui.pdfpreview.src = URL.createObjectURL(new Blob([contents], {type: 'application/pdf'}));
-                this.ui.toggle_viewer('pdf');
-            }
+            open_viewer_tab(file_path, contents);
+            this.ui.set_current_file(this.PATH.basename(file_path), 'Viewing');
         }
         else
         {
             contents = contents || this.FS.readFile(file_path, {encoding : 'utf8'});
-            this.ui.set_current_file(this.PATH.basename(file_path));
             open_editor_tab(file_path, contents);
+            this.ui.set_current_file(this.PATH.basename(file_path), 'Editing');
         }
     }
 
