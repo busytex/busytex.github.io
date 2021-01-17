@@ -107,8 +107,6 @@ export class Shell
             {
                 if(option.text == '.')
                     this.refresh();
-                else if(option.text == '.git')
-                    this.commands(cmd('git', 'status'));
                 else
                     this.commands(cmd('cd', option.value));
             }
@@ -246,9 +244,9 @@ export class Shell
                 return arg.map(toString).join('\t');
             else
             {
-                const res = arg.stdout.replace('\n', '\r\n');
+                let res = arg.stdout.replace('\r\n', '\n').replace('\n', '\r\n');
                 if(res.length > 0 && res[res.length - 1] != '\n')
-                    res += '\r'
+                    res += '\r\n';
                 return res;
             };
         };
