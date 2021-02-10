@@ -167,20 +167,21 @@ class BusytexPipeline
         const NOCLEANUP_callMain = (Module, args) =>
         {
             Module.setPrefix(args[0]);
-            const entryFunction = Module['_main'];
+            const main = Module['_main'], fflush = Module['_fflush'], NULL = 0;
             const argc = args.length+1;
             const argv = Module.stackAlloc((argc + 1) * 4);
             Module.HEAP32[argv >> 2] = Module.allocateUTF8OnStack(Module.thisProgram);
             for (let i = 1; i < argc; i++) 
                 Module.HEAP32[(argv >> 2) + i] = Module.allocateUTF8OnStack(args[i - 1]);
-            Module.HEAP32[(argv >> 2) + argc] = 0;
+            Module.HEAP32[(argv >> 2) + argc] = NULL;
 
             try
             {
-                entryFunction(argc, argv);
+                main(argc, argv);
             }
             catch(e)
             {
+                fflush(NULL);
                 this.print('callMain: ' + e.message);
                 return e.status;
             }
@@ -200,7 +201,7 @@ class BusytexPipeline
         const tex_path = source_name;
         const [xdv_path, pdf_path, log_path, aux_path] = ['.xdv', '.pdf', '.log', '.aux'].map(ext => tex_path.replace('.tex', ext));
         
-        const xetex = ['xetex', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt_latex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
+        const xetex = ['xetex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt_latex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
         const bibtex8 = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
