@@ -65,8 +65,6 @@ export class Shell
         this.cmd = (...parts) => parts.join(' ');
         this.arg = path => this.expandcollapseuser(path, false);
         this.chain = (...cmds) => cmds.join(' && ');
-        this.clear_viewer = false;
-        this.clear_editor = false;
     }
 
     bind()
@@ -492,7 +490,6 @@ export class Shell
     {
         const status = this.github.status();
         this.ui.update_git_status(status, this.github.format_url, this.git_difftool.bind(this), this.open.bind(this));
-        this.clear_viewer = false;
         this.ui.toggle_viewer('gitstatus');
     }
 
@@ -510,7 +507,6 @@ export class Shell
     {
         //const status = await this.github.pull();
         //this.ui.update_git_pull(status.filter(f => f.status != not_modified), status.filter(f => f.status == not_modified));
-        this.clear_viewer = false;
         this.ui.toggle_viewer('gitpull');
     }
     
@@ -645,8 +641,6 @@ export class Shell
 
     open(file_path, contents)
     {
-        const pin = this.isdir(this.file_path) == false;
-
         const open_editor_tab = (file_path, contents = '') =>
         {
             let abspath = file_path == '' ? '' : this.abspath(file_path);
@@ -661,10 +655,6 @@ export class Shell
             //this.editor.restoreViewState(data[desiredModelId].state);
             //this.editor.focus();
 
-            this.clear_editor = !pin;
-            
-            if(this.clear_viewer)
-                this.ui.toggle_viewer('empty');
             this.ui.toggle_editor('editor');
         };
 
@@ -707,7 +697,6 @@ export class Shell
                     {
                         this.log_big_header('$ ls -la ' + this.expandcollapseuser(file_path, false));
                         this.log_big(this.busybox.run(['ls', '-la', file_path]).stdout);
-                        this.clear_viewer = true;
                     }
                     
                     file_path = null;
@@ -730,22 +719,13 @@ export class Shell
             contents = contents || (extname == '.log' ? this.FS.readFile(file_path, {encoding: 'utf8'}) : this.FS.readFile(file_path, {encoding : 'binary'}));
             open_viewer_tab(file_path, contents);
             
-            console.log('open', 'open_viewer', 'clear_editor', this.clear_editor);
-            //if(this.clear_editor)
-            //    open_editor_tab('');
-            this.clear_viewer = !pin;
-
-            console.log('open', 'open_viewer', 'clear_viewer', this.clear_viewer);
-
             this.ui.set_current_file(this.PATH.basename(file_path), file_path, 'viewing');
         }
         else
         {
             contents = contents || this.FS.readFile(file_path, {encoding : 'utf8'});
             open_editor_tab(file_path, contents);
-            this.clear_editor = !pin;
             
-            console.log('open', 'open_editor_tab', this.clear_editor);
             
             this.ui.set_current_file(this.PATH.basename(file_path), file_path, 'editing');
         }
@@ -938,6 +918,10 @@ export class Shell
             else
                 break;
         }
+
+        if(this.OLDPWD != this.FS.cwd())
+            this.open('');
+
         if(refresh)
             this.refresh();
     }
