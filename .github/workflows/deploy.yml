@@ -22,9 +22,9 @@ on:
         default: main
 
       busytexreleasetag:
-        description: 'busytex release tag for core assets (latest is default)'
+        description: 'busytex release tag for core assets'
         required: true
-        default: 'build_b16fdf28019d93ccfd8f09776e4191835acea5dc'
+        default: 'build_2b9eb6b0d5ba7394fa0865bcfa11b077a3190ef9'
       
       busytexubuntureleasetag:
         description: 'busytex release tag for ubuntu assets'
