@@ -13,7 +13,6 @@
     <link rel="preload" href="https://unpkg.com/monaco-editor@latest/min/vs/editor/editor.main.css" as="style" />
     <link rel="preload" href="https://unpkg.com/xterm@3.8.0/dist/xterm.css" as="style" />
     <link rel="preload" href="https://unpkg.com/xterm@3.8.0/dist/xterm.js" as="script" />
-    <link rel="preload" href="/sha1.js" as="script" />
     <link rel="preload" href="/ui.js" as="script" />
     <link rel="preload" href="/guthub.js" as="script" />
     <link rel="preload" href="/busybox.js" as="script" />
@@ -155,13 +154,13 @@
             <figcaption>$ git status</figcaption>
             <strong>Remote branch:</strong><a class="remotebranch"></a>, <strong>commit:</strong><a class="remotecommit"></a>
             <table id="gitstatusmodified">
-                <thead><tr><th>path</th><th>status</th></tr></thead>
+                <thead><tr><th>path</th><th>remote</th><th>diff</th></tr></thead>
                 <tbody></tbody>
             </table>
             <details>
                 <summary>Not modified</summary>
                 <table>
-                    <thead><tr><th>path</th><th>status</th></tr></thead>
+                    <thead><tr><th>path</th><th>remote</th><th>diff</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </details>
@@ -309,13 +308,24 @@ const ui =
         for(const {path, status, abspath} of st)
         {
             const tr = tbody.insertRow();
+            
             let tc = tr.insertCell();
             tc.appendChild(document.createTextNode(path));
+
+            tc = tr.insertCell();
+            if(status != 'new')
+            {
+                let a = document.createElement('a');
+                a.appendChild(document.createTextNode(path));
+                a.href = 'https://github.com';
+                tc.appendChild(a);
+            }
+            
             tc = tr.insertCell();
             const text = document.createTextNode(status);
             if(onclick)
             {
-                const a = document.createElement('a');
+                a = document.createElement('a');
                 tc.appendChild(a);
                 a.href = "#";
                 a.dataset.abspath = abspath;
@@ -553,7 +563,7 @@ const monarch_promises = [paths.lang_monarch_json, paths.latex_monarch_json, pat
 const readme_tex_promise = fetch(paths.readme_tex).then(r => r.text());
 const busybox_wasm_module_promise = fetch(paths.busybox_wasm).then(WebAssembly.compileStreaming);
 
-require(['vs/editor/editor.main', 'xterm/xterm', './dist/busybox_unstripped.js', 'sha1'], async (Monaco, Terminal, busybox_module_constructor, sha1) =>
+require(['vs/editor/editor.main', 'xterm/xterm', './dist/busybox_unstripped.js'], async (Monaco, Terminal, busybox_module_constructor) =>
 {
     const {editor, difftool} = init_editor(Monaco, ui.editor, ui.difftool, ...(await Promise.all(monarch_promises)));
     const terminal = init_terminal(Terminal, ui.terminal, FitAddon);
@@ -562,7 +572,7 @@ require(['vs/editor/editor.main', 'xterm/xterm', './dist/busybox_unstripped.js',
     window.onresize = ui.onresize;
     window.onresize();
 
-    await window.busyshell.run(busybox_module_constructor, busybox_wasm_module_promise, sha1);
+    await window.busyshell.run(busybox_module_constructor, busybox_wasm_module_promise);
 });
 
 </script>
