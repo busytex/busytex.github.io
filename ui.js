@@ -258,31 +258,45 @@ export class Shell
             };
         };
 
-        for(let cmdline of current_terminal_line.split('&&'))
+        const parse_cmdline = current_terminal_line =>
+        {
+            let cmds = [];
+            for(let cmdline of current_terminal_line.split('&&'))
+            {
+                let stdout_redirect = null, stdout_redirect_append = null;
+                if(cmdline.includes('>>'))
+                    [cmdline, stdout_redirect_append] = cmdline.split('>>');
+                else if(cmdline.includes('>'))
+                    [cmdline, stdout_redirect] = cmdline.split('>');
+
+                let [cmd, ...args] = cmdline.trim().split(' ');
+                args = args.map(a => this.expandcollapseuser(a));
+
+                cmds.push({cmd : cmd, args : args, stdout_redirect : stdout_redirect, stdout_redirect_append : stdout_redirect_append});
+            }
+            return cmds;
+        };
+
+        const chained_commands = parse_cmdline(current_terminal_line);
+
+        for(let {cmd, args, stdout_redirect, stdout_redirect_append} of chained_commands)
         {
             let print_or_dump = (arg, ...args) => arg && this.terminal_print(toString(arg), ...args);
-            let redirect = null;
 
-            if(cmdline.includes('>>'))
+            if(stdout_redirect_append)
             {
-                [cmdline, redirect] = cmdline.split('>>');
                 print_or_dump = arg => 
                 {
-                    const f = this.FS.open(redirect.trim(), 'a');
+                    const f = this.FS.open(stdout_redirect_append.trim(), 'a');
                     this.FS.write(f, arg.stdout_binary, 0, arg.stdout_binary.length);
                     this.FS.close(f);
                 }
             }
-            else if(cmdline.includes('>'))
+            else if(stdout_redirect)
             {
-                [cmdline, redirect] = cmdline.split('>');
-                print_or_dump = arg => this.FS.writeFile(redirect.trim(), arg.stdout_binary);
+                print_or_dump = arg => this.FS.writeFile(stdout_redirect.trim(), arg.stdout_binary);
             }
 
-            let [cmd, ...args] = cmdline.trim().split(' ');
-            
-            args = args.map(a => this.expandcollapseuser(a));
-            
             const route = this.ui.get_route();
             if(route.length > 1)
                 args = args.map(a => a.replace('$URLARG', route[1]));
@@ -684,9 +698,11 @@ export class Shell
         else if(file_path != null)
         {
             file_path = this.expandcollapseuser(file_path);
+
             if(file_path != null && this.isdir(file_path))
             {
                 const basename = this.PATH.basename(file_path);
+                const abspath = this.abspath(file_path);
                 const default_path = file_path == '.' ? this.open_find_default_path(file_path) : null;
                 
                 contents = null;
@@ -699,7 +715,7 @@ export class Shell
                         this.git_status();
                     else
                     {
-                        this.log_big_header('$ ls -la ' + this.expandcollapseuser(file_path, false));
+                        this.log_big_header('$ ls -la ' + this.arg(abspath));
                         this.log_big(this.busybox.run(['ls', '-la', file_path]).stdout);
                     }
                     
@@ -708,7 +724,7 @@ export class Shell
                 }
                 else
                 {
-                    this.log_big_header('$ ls -la ' + this.expandcollapseuser(file_path, false));
+                    this.log_big_header('$ ls -la ' + this.arg(abspath));
                     this.log_big(this.busybox.run(['ls', '-la', file_path]).stdout);
 
                     file_path = this.PATH.join2(file_path, default_path);
@@ -911,7 +927,7 @@ export class Shell
         this.refresh_cwd = this.FS.cwd();
     }
 
-    cd(path, refresh = true, strip_components = 0)
+    cd(path, refresh = true)
     {
         if(path == '-')
             path = this.OLDPWD;
@@ -919,17 +935,6 @@ export class Shell
         this.OLDPWD = this.FS.cwd();
         path = this.expandcollapseuser(path || '~');
         this.FS.chdir(path);
-        for(let i = 0; i < strip_components; i++)
-        {
-            const dir = this.ls_R('.', '', false, true);
-            if(dir.length == 1 && dir[0].contents == null)
-                this.FS.chdir(dir[0].path);
-            else
-                break;
-        }
-
-        //if(this.OLDPWD != this.FS.cwd())
-        //    this.open('');
 
         if(refresh)
             this.refresh();
