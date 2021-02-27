@@ -119,19 +119,22 @@ export class Shell
                     this.refresh();
                 else
                     this.commands(parentdir ? chain(cmd('open', '..'), cmd('cd', '..')) : chain(cmd('cd', arg(option.value)), cmd('open', '.')));
-                    //this.commands(parentdir ? cmd('cd', '..') : chain(cmd('cd', arg(option.value)), cmd('open', '.')));
             }
         };
         this.ui.filetree.onkeydown = ev => ev.key == 'Enter' || ev.key == ' ' ? this.ui.filetree.ondblclick() : null;
         this.ui.current_file.onclick = () => this.ui.toggle_current_file_rename() || this.ui.current_file_rename.focus();
+        
         this.ui.current_file_rename.onblur = () => this.ui.set_current_file(this.ui.get_current_file()) || this.ui.toggle_current_file_rename();
-        this.ui.remove.onclick = () => this.ui.get_current_file() && this.commands(chain(this.isdir(this.ui.get_current_file()) ? cmd('rm', '-rf', this.ui.get_current_file()) : cmd('rm', this.ui.get_current_file()), cmd('open', '.'))); 
         this.ui.current_file_rename.onkeydown = ev => ev.key == 'Enter' ? (this.mv(this.ui.get_current_file(), this.ui.current_file_rename.value) || this.ui.set_current_file(this.ui.current_file_rename.value) || this.ui.toggle_current_file_rename()) : ev.key == 'Escape' ? ev.target.onblur() : null;
+        
+        this.ui.remove.onclick = () => this.ui.get_current_file() && this.commands(chain(this.isdir(this.ui.get_current_file()) ? cmd('rm', '-rf', this.ui.get_current_file()) : cmd('rm', this.ui.get_current_file()), cmd('open', '.'))); 
+        
 		
         this.editor.onDidFocusEditorText(ev => this.ui.set_current_file(this.PATH.basename(this.edit_path), this.edit_path, 'editing'));
         this.ui.txtpreview.onfocus = this.ui.imgpreview.onclick = () => this.ui.set_current_file(this.PATH.basename(this.view_path), this.view_path, 'viewing');
         //this.ui.pdfpreview.onclick = ev => console.log('pdfpreview', ev);
-		this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter, this.ui.compile.onclick);
+		this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter, this.ui.compile_current_file.onclick);
+		this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyMod.ShiftCmd | this.monaco.KeyCode.Enter, this.ui.compile_project.onclick);
 		this.difftool.addCommand(this.monaco.KeyCode.Escape, () => this.ui.toggle_editor('editor'), '!findWidgetVisible && !inReferenceSearchEditor && !editorHasSelection'); 
     }
 
