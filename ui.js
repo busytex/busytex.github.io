@@ -38,13 +38,14 @@ export class Shell
         this.current_terminal_line = '';
         this.text_extensions = ['.tex', '.bib', '.txt', '.md', '.svg', '.sh', '.py', '.csv'];
         this.busybox_applets = ['nanozip', 'bsddiff3prog', 'bsddiff', 'busybox', 'find', 'mkdir', 'pwd', 'ls', 'echo', 'cp', 'mv', 'rm', 'du', 'tar', 'touch', 'wc', 'cat', 'head', 'clear', 'unzip', 'gzip', 'base64', 'sha1sum', 'whoami', 'sed'];
-        this.shell_builtins =  ['man', 'help', 'open', 'close', 'download', 'cd', 'purge', 'latexmk', 'git', 'upload', 'wget', 'init'];
+        this.shell_builtins =  ['man', 'help', 'open', 'close', 'download', 'cd', 'purge', 'latexmk', 'git', 'upload', 'wget', 'init', 'dirty'];
         this.cache_applets = ['object', 'token'];
         this.git_applets = ['clone', 'pull', 'push', 'status', 'difftool'];
         this.viewer_extensions = ['.log', '.svg', '.png', '.jpg', '.pdf'];
         this.shell_commands = [...this.shell_builtins, ...this.busybox_applets, ...this.git_applets.map(cmd => 'git ' + cmd), ...this.cache_applets.map(cmd => 'cache ' + cmd)].sort();
         this.tic_ = 0;
         this.timer_delay_millisec = 1000;
+        this.dirty_mode = 'off';
         this.FS = null;
         this.PATH = null;
         this.github = null;
@@ -359,10 +360,6 @@ export class Shell
                     print_or_dump(this.busybox.run([cmd, ...args]), '');
                 else if(cmd == 'tabs')
                     print_or_dump(Object.keys(this.tabs).sort());
-                else if(cmd == 'dirty')
-                    this.ui.set_dirty(true);
-                else if(cmd == 'stoptimer')
-                    this.ui.dirty_timer(false);
                 else if(cmd == 'help')
                     print_or_dump(this.shell_commands);
                 else if(cmd == 'git' && args.length == 0)
@@ -866,6 +863,23 @@ export class Shell
         this.cd(this.readme_dir, true);
         this.open(this.readme_tex);
         this.refresh(this.readme_tex);
+    }
+
+    dirty(mode)
+    {
+        if(mode == 'on')
+        {
+            this.ui.set_dirty(true);
+            this.dirty_mode = mode;
+        }
+        
+        else if(mode == 'off')
+        {
+            this.ui.dirty_timer(false);
+            this.dirty_mode = mode;
+        }
+        
+        return this.dirty_mode;
     }
     
     async latexmk(tex_path)
