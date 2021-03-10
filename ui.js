@@ -45,7 +45,7 @@ export class Shell
         this.shell_commands = [...this.shell_builtins, ...this.busybox_applets, ...this.git_applets.map(cmd => 'git ' + cmd), ...this.cache_applets.map(cmd => 'cache ' + cmd)].sort();
         this.tic_ = 0;
         this.timer_delay_millisec = 1000;
-        this.dirty_mode = 'true';
+        this.dirty_mode = 'timer_save';
         this.FS = null;
         this.PATH = null;
         this.github = null;
@@ -167,12 +167,19 @@ export class Shell
 
     dirty(mode)
     {
-        if(mode == 'true')
+        if(mode == 'timer_save')
         {
+            this.dirty('timer_off');
             this.interval_id = self.setInterval(this.tabs_save, this.timer_delay_millisec, this);
             this.dirty_mode = mode;
         }
-        else if(mode == 'false')
+        if(mode == 'timer_load')
+        {
+            this.dirty('timer_off');
+            this.interval_id = self.setInterval(this.tabs_load, this.timer_delay_millisec, this);
+            this.dirty_mode = mode;
+        }
+        else if(mode == 'timer_off')
         {
             self.clearInterval(this.interval_id);
             this.interval_id = 0;
@@ -498,7 +505,7 @@ export class Shell
             await this.commands('man');
 
         this.bind();
-        this.dirty('true');
+        this.dirty('timer_save');
     }
    
     log_big_header(text = '')
@@ -860,6 +867,21 @@ export class Shell
                 busyshell.FS.writeFile(abspath, busyshell.tabs[abspath].getValue());
         busyshell.ui.set_dirty(false);
     }
+    
+    tabs_load(busyshell)
+    {
+        for(const abspath in busyshell.tabs)
+        {
+            if(abspath != '')
+            {
+                const value = busyshell.tabs[abspath].getValue();
+                const read = busyshell.read_all_text(abspath);
+                if(value != read)
+                    busyshell.tabs[abspath].setValue(value);
+            }
+        }
+        busyshell.ui.set_dirty(false);
+    }
 
     man()
     {
@@ -1065,14 +1087,14 @@ export class Shell
         if(src_abspath == dst_abspath)
             return;
 
-        this.dirty('false');
+        this.dirty('timer_off');
         this.FS.rename(src_file_path, dst_file_path);
         if(this.tabs[dst_abspath])
             this.tabs[dst_abspath].dispose();
         this.tabs[dst_abspath] = this.tabs[src_abspath];
         delete this.tabs[src_abspath];
         this.refresh();
-        this.dirty('true');
+        this.dirty('timer_save');
     }
 }
 
