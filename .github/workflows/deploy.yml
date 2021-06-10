@@ -2,8 +2,8 @@ name: deploy
 
 env:
     BUSYTEX_RELEASES_URL: https://github.com/busytex/busytex/releases
-    BUSYTEX_FILES: versions.txt busytex_pipeline.js busytex_worker.js
-    BUSYTEX_ASSETS_CORE: busytex.wasm busytex.js texlive-basic.js texlive-basic.data
+    BUSYTEX_FILES: busytex_pipeline.js busytex_worker.js
+    BUSYTEX_ASSETS_CORE: versions.txt busytex.wasm busytex.js texlive-basic.js texlive-basic.data
     BUSYTEX_ASSETS_UBUNTU: ubuntu-texlive-latex-base.data ubuntu-texlive-latex-base.js ubuntu-texlive-latex-extra.data ubuntu-texlive-latex-extra.js ubuntu-texlive-latex-recommended.data ubuntu-texlive-latex-recommended.js ubuntu-texlive-science.js ubuntu-texlive-science.data
     BUSYIDE_RELEASES_URL: https://github.com/busytex/busyide/releases
     BUSYIDE_ASSETS: busybox_unstripped.js busybox_unstripped.wasm
@@ -53,10 +53,10 @@ jobs:
           wget -P dist $(printf "$RELEASEURL/%s " $BUSYTEX_ASSETS_CORE)
           RELEASEURL="$BUSYTEX_RELEASES_URL/download/${{ github.event.inputs.busytexubuntureleasetag }}"
           wget -P dist $(printf "$RELEASEURL/%s " $BUSYTEX_ASSETS_UBUNTU)
+          mv dist/versions.txt dist/versions_busytex.txt
           
           git clone https://github.com/busytex/busytex --branch ${{ github.event.inputs.busytexref }} --single-branch --depth 1 busytex
           cp $(printf "busytex/%s " $BUSYTEX_FILES) dist
-          mv dist/versions.txt dist/versions_busytex.txt
           rm -rf busytex
       
       - name: Download Release Assets and Files from https://github.com/busyide/busyide
