@@ -24,12 +24,12 @@ on:
       busytexreleasetag:
         description: 'busytex release tag for core assets'
         required: true
-        default: 'build_d429d09265ea39d3f2daec00dd99685db8586597'
+        default: 'build_926b26cd93861c9051e059f06cbb6351f79e350e'
       
       busytexubuntureleasetag:
         description: 'busytex release tag for ubuntu assets'
         required: true
-        default: 'ubuntupackages_d9a4f4cf16a71735422376112d440b8665344f5a'
+        default: 'ubuntupackages_98c234fc683eff09bcfebd2cd418136fa144d140'
       
       busyidereleasetag:
         description: 'busyide release tag (latest is default)'
