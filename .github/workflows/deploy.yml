@@ -24,7 +24,7 @@ on:
       busytexreleasetag:
         description: 'busytex release tag for core and ubuntu assets'
         required: true
-        default: 'build_bee5399e9039a9891b99376e1ee42edb9f4da032'
+        default: 'build_282687f6f9ef99eb95e4dfe2ffb8df3855bdde9a'
       
       busyidereleasetag:
         description: 'busyide release tag (latest is default)'
