@@ -11,6 +11,11 @@ env:
 on: 
   workflow_dispatch:
     inputs:
+      busytexreleasetag:
+        description: 'busytex release tag for core and ubuntu assets'
+        required: true
+        default: 'build_9b72bafdfcfdafb7b4adddb1ddbe36c22ae40947'
+        
       busytexref:
         description: 'busytex git ref'
         required: true
@@ -20,11 +25,6 @@ on:
         description: 'busyide git ref'
         required: true
         default: main
-
-      busytexreleasetag:
-        description: 'busytex release tag for core and ubuntu assets'
-        required: true
-        default: 'build_9b72bafdfcfdafb7b4adddb1ddbe36c22ae40947'
       
       busyidereleasetag:
         description: 'busyide release tag (latest is default)'
