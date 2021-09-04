@@ -14,7 +14,7 @@ on:
       busytexreleasetag:
         description: 'busytex release tag for core and ubuntu assets'
         required: true
-        default: 'build_8fe1c6ada588209b354713bda46df87e5b221b89'
+        default: 'build_f7927115398b4319c49cebb65cae71ea1a90cc3e'
         
       busytexref:
         description: 'busytex git ref'
