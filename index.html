@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+
+<!-- https://ctan.org/pkg/xetex    http://mirrors.ctan.org/info/xetexref/xetex-reference.pdf https://tug.org/xetex/ -->
+<!-- https://ctan.org/pkg/dvipdfmx https://ctan.net/systems/doc/dvipdfmx/dvipdfmx.pdf -->
+<!-- https://www.tug.org/texinfohtml/kpathsea.html -->
+<!-- https://ctan.org/pkg/pdftex http://mirrors.ctan.org/systems/doc/pdftex/manual/pdftex-a.pdf -->
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="logo.png" />
+    
+    <link rel="busytex" type="text"             id="readme_tex"                 href="/README.tex" />
+    <link rel="busytex" type="text"             id="versions_txt"               href="/versions.txt" />
+    
+    <link rel="busytex" type="text/javascript"  id="busybox_js"                 href="/dist/busybox_unstripped.js" />
+    <link rel="busytex" type="application/wasm" id="busybox_wasm"               href="/dist/busybox_unstripped.wasm" />
+    <link rel="busytex" type="text/javascript"  id="busytex_js"                 href="/dist/busytex.js"  />
+    <link rel="busytex" type="application/wasm" id="busytex_wasm"               href="/dist/busytex.wasm" />
+
+    <link rel="busytex" type="text/javascript"  id="busytex_worker_js"          href="/dist/busytex_worker.js" /> 
+    <link rel="busytex" type="text/javascript"  id="busytex_pipeline_js"        href="/dist/busytex_pipeline.js" />
+    
+    <link rel="busytex" type="application/json" id="lang_monarch_json"          href="./monarch_lang.json" />
+    <link rel="busytex" type="application/json" id="latex_monarch_json"         href="./monarch_latex.json" />
+    <link rel="busytex" type="application/json" id="bibtex_monarch_json"        href="./monarch_bibtex.json" />
+    
+    <link rel="busytex" type="text/javascript"  id="texlive_basic"              href="/dist/texlive-basic.js" />
+    <link rel="busytex" type="text/javascript"  id="texlive_ubuntu_science"     href="/dist/ubuntu-texlive-science.js" />
+    <link rel="busytex" type="text/javascript"  id="texlive_ubuntu_recommended" href="/dist/ubuntu-texlive-latex-recommended.js" />
+    <link rel="busytex" type="text/javascript"  id="texlive_ubuntu_extra"       href="/dist/ubuntu-texlive-latex-extra.js" />
+    
+    <link  href="https://unpkg.com/xterm@4.9.0/css/xterm.css" rel="stylesheet" />
+    <link  href="https://unpkg.com/xterm@4.9.0/lib" id="require_xterm" rel="busytex" />
+    <link  href="https://unpkg.com/monaco-editor@latest/min/vs" rel="busytex" id="require_monaco_editor" />
+    <script src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script>
+    
+    <title>busytex</title>
+
+    <style>
+        body {
+            height: 100vh;
+            padding: 0; 
+            margin: 0;
+        }
+
+        a, a:visited {
+            color:blue;
+        }
+
+        .filetreedirectory {
+            background-color: yellow
+        }
+
+        .error {
+            background-color: red
+        }
+        
+        .ok {
+            background-color: green
+        }
+
+        #fileupload {
+            display: none;
+        }
+
+        #viewer {
+            width: 50%;
+            overflow: scroll;
+        }
+
+        #editor, #difftool {
+            width: 40%; 
+            border: 1px solid grey;
+        }
+
+        #filetree {
+            height:100%;
+            width: 10%;
+        }
+
+        #terminal {
+            width: 100%; 
+            height: 60%;
+        }
+
+        #status {
+            width: 100%;
+            height: 40%;
+            padding: 5px;
+            margin: 0;
+            resize: none;
+            box-sizing: border-box;
+        }
+
+        #commit_message {
+            width: 99%
+        }
+
+        #pdfpreview, #txtpreview {
+            width: 99%;
+            height: 100%;
+        }
+
+        #imgpreview {
+            max-height: 100%
+        }
+
+        #gitstatus {
+            height: 100%
+        }
+        
+        summary {
+            width: 95%;
+        }
+
+        #gitsummary th {
+            text-align: left
+        }
+
+        #gitsummary td {
+            text-align: right
+        }
+        
+        #gitsummary {
+            width: 100%
+        }
+
+        #gitstatustable {
+            width: 100%
+        }
+
+        .tl {text-align: left}
+        .tr {text-align: right}
+        .vt {vertical-align: top}
+        
+        /*figure, details, table {
+            width: 95%;
+            height: 95%;
+        }*/
+
+        td {padding: 0px; border: 0px}
+
+        /*.busyui {height:fit-content}*/
+
+    </style>
+  </head>
+  <body>
+    <div style="display: flex; flex-direction: row; height: 5%">
+        <a style="display: contents" href="https://github.com/busytex/busytex" title="https://github.com/busytex/busytex" target="_blank">
+            <!--<img src="logo.svg" style="height:100%"></img>-->
+            <svg style="height: 100%; width: auto"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:cc="http://creativecommons.org/ns#"
+               xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+               xmlns:svg="http://www.w3.org/2000/svg"
+               xmlns="http://www.w3.org/2000/svg"
+               xmlns:xlink="http://www.w3.org/1999/xlink"
+               xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+               xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+               inkscape:export-ydpi="4296.6343"
+               inkscape:export-xdpi="4296.6343"
+               inkscape:export-filename="C:\Users\user\Desktop\B.png"
+               width="11.171535"
+               height="11.07583"
+               viewBox="1872.02 1483.109 6.6777853 6.6207901"
+               version="1.1"
+               id="svg16"
+               sodipodi:docname="B.svg"
+               inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
+              <metadata
+                 id="metadata20">
+                <rdf:RDF>
+                  <cc:Work
+                     rdf:about="">
+                    <dc:format>image/svg+xml</dc:format>
+                    <dc:type
+                       rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+                    <dc:title />
+                  </cc:Work>
+                </rdf:RDF>
+              </metadata>
+              <sodipodi:namedview
+                 inkscape:document-rotation="0"
+                 pagecolor="#ffffff"
+                 bordercolor="#666666"
+                 borderopacity="1"
+                 objecttolerance="10"
+                 gridtolerance="10"
+                 guidetolerance="10"
+                 inkscape:pageopacity="0"
+                 inkscape:pageshadow="2"
+                 inkscape:window-width="1366"
+                 inkscape:window-height="705"
+                 id="namedview18"
+                 showgrid="false"
+                 inkscape:zoom="41.384615"
+                 inkscape:cx="5.0867608"
+                 inkscape:cy="5.4022906"
+                 inkscape:window-x="-8"
+                 inkscape:window-y="-8"
+                 inkscape:window-maximized="1"
+                 inkscape:current-layer="svg16" />
+              <defs
+                 id="defs11">
+                <path
+                   id="g0-66"
+                   d="m 1.527,-6.48 c 0,-0.142 0,-0.415 -0.098,-0.61 h 1.19 c -0.143,0.174 -0.143,0.392 -0.143,0.555 v 5.597 c 0,0.163 0,0.382 0.142,0.556 H 1.43 c 0.098,-0.196 0.098,-0.469 0.098,-0.61 V -6.48 Z m 2.968,2.29 c 0.36,-0.348 0.447,-0.905 0.447,-1.374 0,-0.752 -0.24,-1.221 -0.491,-1.483 0.753,0.087 1.527,0.36 1.527,1.44 0,0.698 -0.763,1.265 -1.483,1.418 z M 2.858,-6.501 c 0,-0.218 0,-0.338 0.153,-0.458 0.044,-0.022 0.207,-0.13 0.469,-0.13 0.48,0 1.08,0.38 1.08,1.526 0,1.222 -0.622,1.484 -1.702,1.506 z M 5.15,-4.004 C 5.76,-4.32 6.36,-4.865 6.36,-5.607 6.36,-7.124 5.105,-7.473 3.775,-7.473 H 0.469 c -0.196,0 -0.37,0 -0.37,0.197 0,0.185 0.185,0.185 0.36,0.185 0.654,0 0.686,0.11 0.686,0.633 v 5.443 c 0,0.546 -0.043,0.633 -0.73,0.633 -0.12,0 -0.317,0 -0.317,0.186 C 0.098,0 0.273,0 0.47,0 h 3.24 c 1.342,0 3.066,-0.524 3.066,-2.04 0,-1.135 -0.83,-1.745 -1.626,-1.964 z M 2.86,-0.97 v -2.705 c 0.872,0 1.243,0 1.581,0.25 0.425,0.328 0.458,1.037 0.458,1.386 0,0.425 -0.033,1.658 -1.396,1.658 -0.644,0 -0.644,-0.382 -0.644,-0.589 z m 1.94,0.457 c 0.404,-0.458 0.48,-1.036 0.48,-1.527 0,-0.753 -0.164,-1.32 -0.6,-1.68 1.004,0.164 1.713,0.73 1.713,1.68 0,0.83 -0.655,1.31 -1.593,1.527 z" />
+              </defs>
+              <use
+                 x="1872.02"
+                 y="1490.731"
+                 xlink:href="#g0-66"
+                 id="page1"
+                 transform="matrix(0.98053338,0,0,0.87436432,36.417908,186.24449)"
+                 width="100%"
+                 height="100%"
+                 inkscape:export-xdpi="100"
+                 inkscape:export-ydpi="100" />
+              <script
+                 type="text/ecmascript"
+                 id="script14">if(window.parent.postMessage)window.parent.postMessage(&quot;0.18703|9|9.75|&quot;+window.location,&quot;*&quot;);</script>
+            </svg>
+
+        </a>
+        <button id="man" class="busyui" title="man">Help</button>
+        <button id="import_project" class="busyui">Open</button>
+        <button id="upload" class="busyui">Upload Files</button>
+        <button id="new_file" class="busyui">New File</button>
+        <button id="new_folder" class="busyui">New Folder</button>
+        <button id="apply_patch" class="busyui">Apply Diff</button>
+        <div style="display: flex; margin-left:auto">
+            <input type="text" id="github_https_path" class="busyui" placeholder="GitHub https link" title="GitHub https url"></input>
+            <input type="text" id="github_branch" class="busyui" placeholder="GitHub branch" title="GitHub repo branch"></input>
+            <input type="text" id="github_token" class="busyui" placeholder="GitHub token" title="GitHub personal access token (PAT) for private clone/push"></input>
+            <button id="clone" class="busyui">Clone</button>
+            <button id="gitops" class="busyui">Status, Pull, Push</button>
+            <button id="cache_purge" class="busyui">Purge Cache</button>
+            <button id="download_diff" class="busyui">Download Diff</button>
+            <input hidden type="text" style="width: 100px" id="github_release" class="busyui" placeholder="Publish Release Name" title="for publishing a PDF into a release"></input>
+        </div>
+    </div>
+    <div style="display: flex; flex-direction: row; height: 5%">
+        <button id="download" class="busyui">Download Current File</button>
+        <button id="download_zip" class="busyui">Download ZIP</button>
+        <button id="download_targz" class="busyui" title="useful for arxiv.org submissions">Download TAR.GZ</button>
+        <button id="flatten_texmf" class="busyui">Flatten TEXMF</button>
+        <button id="strip_comments" class="busyui" title="recursively">Strip Comments</button>
+        <button id="search" class="busyui" title="Ctrl + Shift + F">Search in Files</button>
+        <input type="text" id="search_query" class="busyui" placeholder="Search terms" title="ignores case"></input>
+        <div style="display: flex; margin-left:auto">
+            <input hidden type="text" class="busyui" id="current_file_rename" title="Press [Enter] to complete renaming"></input>
+            <button id="rename" class="busyui">
+                Rename [<span id="verb" class="busyui">N/A</span>]:&nbsp;
+                [<span id="current_file" class="busyui">N/A</span>]
+                <span id="dirty" class="busyui" hidden title="file is changed. wait for autosave">*</span>
+            </button>
+            
+            <button id="remove" class="busyui">Delete</button>
+            <button id="share" class="busyui">Share Project: [<span id="project_name" class="busyui">N/A</span>]</button>
+            <button id="view_log" class="busyui ok">View LOG</button>
+            <button id="view_pdf" class="busyui">View PDF</button>
+            <button id="download_pdf" class="busyui">Download PDF</button>
+        </div>
+    </div>
+    <div style="display: flex; flex-direction: row; height: 5%">
+        <button id="compile_current_file" class="busyui" title="Ctrl + Shift + Enter">Compile Current File</button>
+        <button id="compile_project" class="busyui" title="Ctrl + Enter">Compile Project</button>
+        <button id="show_tex_settings" class="busyui">TeX Settings</button>
+        <select id="tex_driver" class="busyui" >
+            <option value="xetex_bibtex8_dvipdfmx" selected>TeX Pipeline: XeTeX + bibtex8 + dvipdfmx</option>
+            <option value="pdftex_bibtex8">TeX Pipeline: PdfTeX + bibtex8</option>
+            <option value="luahbtex_bibtex8">TeX Pipeline: LuaHBTeX + bibtex8</option>
+            <option value="luatex_bibtex8">TeX Pipeline: LuaTeX + bibtex8</option>
+        </select>
+        <select id="bibtex" class="busyui">
+            <option value="auto" selected title="scans files for bibliography commands">BibTeX: auto detection</option>
+            <option value="enabled">BibTeX: enabled</option>
+            <option value="disabled" title="runs much faster">BibTeX: disabled</option>
+        </select>
+        <select id="verbose" class="busyui">
+            <option value="silent" selected="selected">Verbosity: Silent</option>
+            <option value="info">Verbosity: Info</option>
+            <option value="debug">Verbosity: Debug</option>
+        </select>
+        <select id="tex_path" class="busyui">
+            <option value="" disabled selected hidden>TeX Project File: N/A</option>
+        </select>
+            
+
+        <div style="display: flex; margin-left:auto">
+            <button id="install_tex_package" class="busyui" title="without dependencies">Install TexLive Package</button>
+            <input type="text" class="busyui" id="current_tex_package" placeholder="Package name"></input>
+        </div> 
+    </div>
+    <div style="display: flex; height: 80%">
+      <select id="filetree" class="busyui" size="100"></select>
+      <div id="editor" class="busyui"></div>
+      <div id="difftool" class="busyui" hidden></div>
+      <div id="viewer">
+        <iframe id="pdfpreview" class="busyui"></iframe>
+        <img hidden id="imgpreview" class="busyui"></img>
+        <textarea readonly hidden id="txtpreview" class="busyui"></textarea>
+        <figure hidden id="texsettings" class="busyui">
+            <table>
+                <thead>
+                    <tr><th colspan="2" class="tl">ubuntu package</th><th class="tl">tex packages</th></tr>
+                    <tr><td colspan="3"><input type="checkbox" id="data_package_auto" checked>auto selection</input></td></tr>
+                </thead>
+                <tbody id="data_packages">
+                </tbody>
+                <thead>
+                    <tr><td colspan="3"><hr /></td></tr>
+                    <tr><th class="tl" colspan="2">program</th><th class="tl">version</th></tr>
+                </thead>
+                <tbody id="tex_versions">
+                </tbody>
+            </table>
+        </figure>
+        <figure hidden id="searchresults" class="busyui">
+            <figcaption>$ rgrep "<span></span>"</figcaption>
+            <table style="width:100%">
+                <thead><th class="tl">#line</th><th class="tl">path</th><th class="tr">line</th></thead>
+                <tbody></tbody>
+            </table>
+        </figure>
+        <figure hidden id="gitstatus" class="busyui">
+            <figcaption>$ git status</figcaption>
+            <button id="pull" class="busyui">Pull</button>
+            <button id="commit_push" class="busyui">Commit &amp; Push</button>
+            <button id="commit_push_new_branch" class="busyui">Commit &amp; Push to new branch</button>
+            <button id="show_not_modified" class="busyui">Show [not modified]</button>
+            <button id="refresh_fetch" class="busyui">Refresh &amp; Fetch</button>
+            <button id="reset_hard" class="busyui">Hard Reset</button>
+            <button id="release_pdf" class="busyui">Release PDF</button>
+            <textarea id="commit_message" class="busyui" placeholder="Please add a commit message"></textarea>
+            
+            <hr />
+            <table id="gitsummary">
+                <tr><th>repo:</th><td><a id="remoteurl"></a></td></tr>
+                <tr><th>remote branch:</th><td><a id="remotebranch"></a></td></tr>
+                <tr><th>remote commit:</th><td><a id="remotecommit"></a></td></tr>
+                <tr><th>local commit:</th><td><a id="localcommit"></a></td></tr>
+                <tr><th>status:</th><td id="gitsummarystatus"></td></tr>
+                <tr><th>changes:</th><td id="gitsummarychanges"></td></tr>
+            </table>
+            <hr />
+            <table id="gitstatustable">
+                <thead><tr><th class="tl">path</th><th>remote</th><th>github</th><th class="tr">diff</th></tr></thead>
+                <tbody></tbody>
+                <!--<tfoot hidden><tr><td colspan="4">nothing to commit</td></tr></tfoot>-->
+            </table>
+        </figure>
+        <figure hidden id="gitpull" class="busyui">
+            <figcaption>$ git pull</figcaption>
+        </figure>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: row; height: 5%">
+      <div id="terminal" class="busyui" style="height:100%; width: 50%"></div>
+      <textarea readonly style="height:100%; width: 50%"
+        title="double click for expanding"
+        name="status"
+        id="status"
+        class="busyui"
+        cols="1"
+        rows="1"
+      ></textarea>
+      <input type="file" id="fileupload" class="busyui" multiple>
+    </div>
+
+
+<script src="/dist/busytex_pipeline.js"></script>
+
+<script type="module">
+
+import { Shell } from '/busyide.js'
+
+// taken from https://github.com/xtermjs/xterm.js/tree/master/addons/xterm-addon-fit
+class FitAddon{
+
+  constructor() {this._terminal = undefined;}
+
+  activate(terminal) {
+    this._terminal = terminal;
+  }
+
+  dispose(){}
+
+  fit(){
+    const dims = this.proposeDimensions();
+    if (!dims || !this._terminal) {
+      return;
+    }
+
+    // TODO: Remove reliance on private API
+    const core = (this._terminal)._core;
+
+    // Force a full render
+    if (this._terminal.rows !== dims.rows || this._terminal.cols !== dims.cols) {
+      core._renderService.clear();
+      this._terminal.resize(dims.cols, dims.rows);
+    }
+  }
+
+  proposeDimensions(){
+    if (!this._terminal) {
+      return undefined;
+    }
+
+    if (!this._terminal.element || !this._terminal.element.parentElement) {
+      return undefined;
+    }
+
+    // TODO: Remove reliance on private API
+    const core = (this._terminal)._core;
+
+    if (core._renderService.dimensions.actualCellWidth === 0 || core._renderService.dimensions.actualCellHeight === 0) {
+      return undefined;
+    }
+
+    const parentElementStyle = window.getComputedStyle(this._terminal.element.parentElement);
+    const parentElementHeight = parseInt(parentElementStyle.getPropertyValue('height'));
+    const parentElementWidth = Math.max(0, parseInt(parentElementStyle.getPropertyValue('width')));
+    const elementStyle = window.getComputedStyle(this._terminal.element);
+    const elementPadding = {
+      top: parseInt(elementStyle.getPropertyValue('padding-top')),
+      bottom: parseInt(elementStyle.getPropertyValue('padding-bottom')),
+      right: parseInt(elementStyle.getPropertyValue('padding-right')),
+      left: parseInt(elementStyle.getPropertyValue('padding-left'))
+    };
+    const elementPaddingVer = elementPadding.top + elementPadding.bottom;
+    const elementPaddingHor = elementPadding.right + elementPadding.left;
+    const availableHeight = parentElementHeight - elementPaddingVer;
+    const availableWidth = parentElementWidth - elementPaddingHor - core.viewport.scrollBarWidth;
+    
+    const MINIMUM_COLS = 2;
+    const MINIMUM_ROWS = 1;
+
+    const geometry = {
+      cols: Math.max(MINIMUM_COLS, Math.floor(availableWidth / core._renderService.dimensions.actualCellWidth)),
+      rows: Math.max(MINIMUM_ROWS, Math.floor(availableHeight / core._renderService.dimensions.actualCellHeight))
+    };
+    return geometry;
+  }
+}
+
+const ui =
+{
+    ...Object.fromEntries(Array.from(document.querySelectorAll('.busyui')).map(el => [el.id, el] )),
+    
+    log_reset_sequence : '\x1bc',
+    
+    isdir : option => option.className == 'filetreedirectory',
+
+    get_current_file : (abspath = false) => abspath === true ? ui.rename.title : ui.current_file.textContent,
+
+    get_origin : () => window.location.origin,
+    
+    get_current_tex_path : () => ui.tex_path.value,
+
+    get_selected_file_path : () => ui.filetree.value || ui.filetree.dataset.value,
+    
+    set_current_log : abspath => (ui.view_log.title = abspath),
+    
+    set_dirty : dirty => (ui.dirty.hidden = !dirty),
+
+    set_error : error => ([ui.view_log.className, ui.view_log.title] = error ? ['error', error] : ['ok', 'All OK!']),
+
+    set_current_pdf : abspath => (ui.download_pdf.title = ui.view_pdf.title = abspath),
+
+    set_project_name : basename => (ui.project_name.innerText = basename || 'N/A'),
+    
+    log_big : text => ui.log(text, ui.txtpreview),
+    
+    log_small : text => ui.log(text, ui.status),
+    
+    set_route : (...route_parts) => (window.location.hash = route_parts.join('/')),
+
+    get_route : () => window.location.hash.length > 0 ? [window.location.hash.substring(1)] : [],
+
+    set_current_file(basename, abspath, verb = '')
+    {
+        let span = ui.current_file;
+        span.textContent = basename;
+        
+        span = ui.verb;
+        if(!verb)
+            verb = span.textContent;
+        span.textContent = verb;
+        ui.download.title = ui.remove.title = ui.rename.title = abspath;
+        
+        ui.filetree.value = abspath;
+        ui.filetree.dataset.value = abspath;
+    },
+
+    toggle_current_file_rename(basename)
+    {
+        const input = ui.current_file_rename;
+        input.value = basename;
+        input.hidden = basename ? false : true;
+    },
+
+    toggle_not_modified()
+    {
+        for(const tr of document.querySelectorAll('.notmodified'))
+            tr.hidden = !tr.hidden;
+    },
+
+    update_tbody(tbody, st, format_path, onclick_open, onclick_open_remote, onclick_diff)
+    {
+        tbody.innerHTML = '';
+        for(const {path, status, abspath, abspath_remote} of st)
+        {
+            const tr = tbody.insertRow();
+            tr.hidden = status == 'not modified';
+            tr.className = status.replace(' ', '');
+            
+            let tc = tr.insertCell();
+            tc.className = 'tl';
+            {
+                const a = document.createElement('a');
+                tc.appendChild(a);
+                a.href = "#";
+                a.dataset.abspath = abspath;
+                a.onclick = onclick_open;
+                tc = a;
+            }
+            tc.innerText = path;
+            
+            tc = tr.insertCell();
+            if(abspath_remote)
+            {
+                const a = document.createElement('a');
+                tc.appendChild(a);
+                a.href = "#";
+                a.dataset.abspath_remote = abspath_remote;
+                a.dataset.abspath = abspath;
+                a.onclick = onclick_open_remote;
+                tc = a;
+            }
+            tc.innerText = 'remote';
+
+            tc = tr.insertCell();
+            if(status != 'new')
+            {
+                const a = document.createElement('a');
+                a.innerText = 'github';
+                a.target = '_blank';
+                a.href = format_path(path);
+                tc.appendChild(a);
+            }
+            
+            tc = tr.insertCell();
+            tc.className = 'tr';
+            if(status != 'not modified')
+            {
+                const a = document.createElement('a');
+                tc.appendChild(a);
+                a.href = "#";
+                a.dataset.abspath = abspath;
+                a.onclick = onclick_diff;
+                tc = a;
+            }
+            tc.innerText = status;
+        }
+    },
+
+    update_busytex_applet_versions(applet_versions)
+    {
+        const figure = document.getElementById('texsettings');
+        const tbody = figure.querySelector('#tex_versions');
+        tbody.innerHTML = '';
+        for(const [applet, version] of Object.entries(applet_versions))
+        {
+            const tr = tbody.insertRow();
+            
+            const th = document.createElement('th');
+            th.innerText = applet;
+            th.className = 'vt tl';
+            th.colSpan = 2;
+            tr.appendChild(th);
+
+            const tc = tr.insertCell();
+            tc.innerText = version;
+        }
+    },
+    
+    update_tex_settings(data_packages)
+    {
+        const figure = document.getElementById('texsettings');
+        const tbody = figure.querySelector('#data_packages');
+        tbody.innerHTML = '';
+        const basename = path => path.slice(path.lastIndexOf('/') + 1);
+        for(const [k, v] of data_packages)
+        {
+            const tr = tbody.insertRow();
+            
+            let tc = tr.insertCell();
+            tc.className = 'vt';
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.value = k;
+            input.className = 'data_package';
+            input.id = k;
+            tc.appendChild(input);
+            
+            tc = tr.insertCell();
+            tc.className = 'vt';
+            let a = document.createElement('a');
+            a.innerText = basename(k);
+            a.target = '_blank';
+            a.href = basename(k).startsWith('ubuntu-') ? ('https://packages.ubuntu.com/groovy/all/' + basename(k).replace('ubuntu-', '').replace('.js', '') + '/filelist') : 'https://tug.org/svn/texlive/trunk/Master/tlpkg/tlpsrc/collection-basic.tlpsrc?view=markup'; // http://www.tug.org/texlive/devsrc/Master/tlpkg/tlpsrc/collection-basic.tlpsrc
+            tc.appendChild(a);
+            
+            tc = tr.insertCell();
+            for(const tex_package of v)
+            {
+                a = document.createElement('a');
+                a.innerText = tex_package;
+                a.target = '_blank';
+                a.href = 'https://ctan.org/pkg/' + tex_package;
+                tc.appendChild(a);
+                tc.appendChild(document.createTextNode(', '));
+            }
+        }
+    },
+
+    update_search_results(search_query, search_results, open)
+    {
+        const ignore = h => (evt => {h(evt); return false;});
+        const onclick = ignore(evt => open(evt.target.dataset.abspath, parseInt(evt.target.innerText)));
+        
+        const figure = document.getElementById('searchresults');
+        const span = figure.querySelector('span'), tbody = figure.querySelector('tbody');
+        span.innerText = search_query;
+        tbody.innerHTML = '';
+        for(const {path, abspath, line_number, line} of search_results)
+        {
+            const tr = tbody.insertRow();
+            
+            let tc = tr.insertCell();
+            const a = document.createElement('a');
+            a.href = "#";
+            a.dataset.abspath = abspath;
+            a.innerText = '' + line_number;
+            a.onclick = onclick; 
+            tc.appendChild(a);
+            
+            tc = tr.insertCell();
+            tc.innerText = path;
+
+            tc = tr.insertCell();
+            tc.className = 'tr';
+            tc.innerText = line;
+        }
+    },
+    
+    update_git_status(container, status, format_url, git_difftool, open)
+    {
+        const table = container.querySelector('#gitstatustable');
+        const tbody = table.querySelector('tbody');
+
+        const a_url = container.querySelector('#remoteurl');
+        const a_branch = container.querySelector('#remotebranch');
+        const a_rcommit = container.querySelector('#remotecommit');
+        const a_lcommit = container.querySelector('#localcommit');
+        const gitsummarystatus = container.querySelector('#gitsummarystatus');
+        const gitsummarychanges = container.querySelector('#gitsummarychanges');
+
+        a_url.href = format_url(status.username, status.reponame, status.gist);
+        a_url.innerText = `${status.username}/${status.reponame}`;
+
+        a_branch.href = format_url(status.username, status.reponame, status.gist, status.remote_branch);
+        a_branch.innerText = status.remote_branch;
+        
+        a_rcommit.href = format_url(status.username, status.reponame, status.gist, status.remote_branch, status.remote_commit);
+        a_rcommit.innerText = status.remote_commit;
+        
+        a_lcommit.href = format_url(status.username, status.reponame, status.gist, status.remote_branch, status.local_commit);
+        a_lcommit.innerText = status.local_commit;
+
+        gitsummarystatus.innerText = status.local_commit == status.remote_commit ? 'local commit up-to-date' : 'local commit is behind';
+        gitsummarychanges.innerText = (status.files.some(f => f.status != 'not modified') ? ( status.files.filter(f => f.status == 'new').length + ' files new | ' + status.files.filter(f => f.status == 'modified').length + ' files modified | ' + status.files.filter(f => f.status == 'deleted').length + ' files deleted' ) : 'no changes');
+
+        const ignore = h => (evt => {h(evt); return false;});
+        
+        const format_path = path => format_url(status.username, status.reponame, status.gist, status.remote_branch, status.remote_commit, path);
+        const onclick_diff = ignore(evt => git_difftool(evt.target.dataset.abspath)); 
+        const onclick_open = ignore(evt => open(evt.target.dataset.abspath));
+        const onclick_open_remote = ignore(evt => open(evt.target.dataset.abspath_remote, null, true, evt.target.dataset.abspath));
+        
+        this.update_tbody(tbody, status.files, format_path, onclick_open, onclick_open_remote, onclick_diff);
+    },
+    
+    update_file_tree(files, selected_file_path = null)
+    {
+        console.log('update_file_tree', files, '[', selected_file_path, ']');
+        const select = ui.filetree;
+        
+        let i = 0, j = select.length - 1;
+        for(; i < files.length; i++)
+        {
+            let option = select.options[i];
+            if(option == null)
+            {
+                option = document.createElement('option');
+                select.options.add(option);
+            }
+            option.text = files[i].name;
+            option.value = option.title = files[i].abspath;
+            option.selected = selected_file_path == option.value;
+            option.dataset.type = files[i].contents == null ? 'd' : 'f';
+            option.className = files[i].contents == null ? 'filetreedirectory' : '';
+        }
+        for(; j >= i; j--)
+            select.options.remove(j);
+    },
+
+    update_tex_paths(files, selected_file_path = null)
+    {
+        const select = ui.tex_path;
+
+        if(selected_file_path === null)
+            selected_file_path = select.value;
+
+        if(selected_file_path === '' || files.length == 0)
+        {
+            select.options[0].hidden = false;
+            select.options[0].selected = true;
+        }
+        else
+            select.options[0].hidden = true;
+
+        let i = 0; 
+        for(; i < files.length; i++)
+        {
+            let option = select.options[1 + i];
+            if(option == null)
+            {
+                option = document.createElement('option');
+                select.options.add(option);
+            }
+            option.text = select.options[0].text.replace('N/A', files[i].name);
+            option.value = option.title = files[i].abspath;
+            option.selected = selected_file_path === option.value;
+        }
+        for(let j = select.length - 1; j >= 1 + i; j--)
+            select.options.remove(j);
+    },
+
+    create_and_click_download_link(file_path, content, mime, timeout_millisec = 2000)
+    {
+        const a = document.createElement('a');
+        a.download = file_path;
+        a.href = URL.createObjectURL(new Blob([content], {type: mime}));
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+  
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(a.href); }, timeout_millisec);
+    },
+    
+    onresize()
+    {
+        window.busyshell.editor.layout()
+        window.busyshell.terminal.fit_addon.fit()
+    },
+
+    log(text, textarea)
+    {
+        if(text == ui.log_reset_sequence)
+            textarea.value = '';
+        else
+        {
+            textarea.value += text + '\n';
+            textarea.scrollTop = textarea.scrollHeight;
+        }
+    },
+
+    get_enabled_data_packages()
+    {
+        if(document.getElementById('data_package_auto').checked)
+            return null;
+
+        return Array.from(document.querySelectorAll('.data_package')).filter(input => input.checked).map(input => input.value);
+    },
+
+    toggle_editor : mode => ([ui.editor.hidden, ui.difftool.hidden] = [mode != 'editor', mode != 'difftool']),
+
+    toggle_viewer(mode, contents = '')
+    {
+        if(mode == 'empty')
+        {
+            ui.txtpreview.value = '';
+            mode = '.log';
+        }
+        [ui.imgpreview.hidden, ui.pdfpreview.hidden, ui.txtpreview.hidden, ui.gitstatus.hidden, ui.gitpull.hidden, ui.searchresults.hidden, ui.texsettings.hidden] = [mode != '.svg' && mode != '.jpg' && mode != '.png' && mode != '.bmp', mode != '.pdf', mode != '.log', mode != 'gitstatus', mode != 'gitpull', mode != 'searchresults', mode != 'texsettings'];
+
+        const b64encode = uint8array => btoa(uint8array.reduce((acc, i) => acc += String.fromCharCode.apply(null, [i]), ''));
+
+        if(mode == '.log')
+            ui.txtpreview.value = contents;
+        else if(mode == '.pdf')
+            ui.pdfpreview.src = URL.createObjectURL(new Blob([contents], {type: 'application/pdf'}));
+        else if(mode == '.svg')
+            ui.imgpreview.src = 'data:image/svg+xml;base64,' + b64encode(contents);
+        else if(mode == '.png')
+            ui.imgpreview.src = 'data:image/png;base64,' + b64encode(contents);
+        else if(mode == '.jpg')
+            ui.imgpreview.src = 'data:image/jpg;base64,' + b64encode(contents);
+        else if(mode == '.bmp')
+            ui.imgpreview.src = 'data:image/bmp;base64,' + b64encode(contents);
+    }
+};
+
+const paths_list = Array.from(document.head.getElementsByTagName('link')).filter(link => link.rel == 'busytex').map(link => [link.id, link.href])
+
+const texlive_data_packages_js = paths_list.filter(([id, href]) => id.startsWith('texlive_')).map(([id, href]) => href);
+
+const paths = { ...Object.fromEntries(paths_list), texlive_data_packages_js : texlive_data_packages_js };
+
+require.config({ paths: { vs: paths.require_monaco_editor , xterm: paths.require_xterm } });
+
+window.MonacoEnvironment = 
+{
+    getWorkerUrl: function (workerId, label)
+    {
+        // Before loading vs/editor/editor.main, define a global MonacoEnvironment that overwrites
+        // the default worker url location (used when creating WebWorkers). The problem here is that
+        // HTML5 does not allow cross-domain web workers, so we need to proxy the instantiation of
+        // a web worker through a same-domain script
+        
+        const baseUrl = document.getElementById('require_monaco_editor').href.replace('/vs', '');
+        const worker_code = `self.MonacoEnvironment = { baseUrl: '${baseUrl}/' }; importScripts('${baseUrl}/vs/base/worker/workerMain.js');`;
+        return `data:text/javascript;charset=utf-8,${encodeURIComponent(worker_code)}`;
+    }
+};
+
+function init_editor(monaco, editor_element, difftool_element, lang_monarch, latex_monarch, bibtex_monarch, monaco_theme = 'vs-dark')
+{
+    // https://microsoft.github.io/monaco-editor/monarch.html
+    // https://github.com/microsoft/monaco-languages/blob/master/src/python/python.ts
+
+    // https://github.com/koka-lang/madoko/blob/master/styles/lang/latex.json
+    monaco.languages.register({ id: latex_monarch.name, mimetypes : latex_monarch.mimeTypes, extensions : latex_monarch.fileExtensions});
+	monaco.languages.setMonarchTokensProvider(latex_monarch.name, latex_monarch);
+    monaco.languages.setLanguageConfiguration(latex_monarch.name, lang_monarch);
+    
+    // https://github.com/koka-lang/madoko/blob/master/styles/lang/bibtex.json
+	monaco.languages.register({ id: bibtex_monarch.name, mimetypes : bibtex_monarch.mimeTypes, extensions : bibtex_monarch.fileExtensions});
+	monaco.languages.setMonarchTokensProvider(bibtex_monarch.name, bibtex_monarch);
+    monaco.languages.setLanguageConfiguration(bibtex_monarch.name, lang_monarch);
+
+    return {
+        editor: monaco.editor.create(editor_element, { automaticLayout: true, wordWrap: 'on', theme: monaco_theme, minimap: {enabled: false } }), 
+        difftool: monaco.editor.createDiffEditor(difftool_element, { automaticLayout: true, theme: monaco_theme, readOnly: true })
+    };
+}
+
+function init_terminal(Terminal, terminal_element, FitAddon)
+{
+    const terminal = new Terminal.Terminal();
+    terminal.fit_addon = new FitAddon();
+    terminal.loadAddon(terminal.fit_addon);
+
+    terminal.open(ui.terminal);
+    return terminal;
+}
+
+const monarch_promises = [paths.lang_monarch_json, paths.latex_monarch_json, paths.bibtex_monarch_json].map(x => fetch(x).then(r => r.json()));
+
+const readme_tex_promise = fetch(paths.readme_tex).then(r => r.text());
+const versions_txt_promise = fetch(paths.versions_txt).then(r => r.text());
+const busybox_wasm_module_promise = fetch(paths.busybox_wasm);
+
+require(['vs/editor/editor.main', 'xterm/xterm', paths.busybox_js], async (Monaco, Terminal, busybox_module_constructor) =>
+{
+    //TODO: handle errors
+    const {editor, difftool} = init_editor(Monaco, ui.editor, ui.difftool, ...(await Promise.all(monarch_promises)));
+    const terminal = init_terminal(Terminal, ui.terminal, FitAddon);
+        
+    window.busyshell = new Shell(monaco, ui, paths, await readme_tex_promise, await versions_txt_promise, terminal, editor, difftool);
+    window.onresize = ui.onresize;
+    window.onresize();
+
+    await window.busyshell.run(busybox_module_constructor, busybox_wasm_module_promise);
+});
+
+</script>
+
+</body>
+</html>
