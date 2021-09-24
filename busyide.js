@@ -181,19 +181,7 @@ export class Shell
         this.ui.github_https_path.onkeypress = this.ui.github_branch.onkeypress = this.ui.github_token.onkeypress = ev => ev.key == 'Enter' ? this.ui.clone.click() : null;
         this.ui.filetree.onchange = ev => this.open(this.expandcollapseuser(this.ui.get_selected_file_path() || '', false));
 
-        this.ui.filetree.ondblclick = ev =>
-        {
-            const option = ev.target; 
-            if(this.ui.isdir(option))
-            {
-                const samedir = option.text == '.', parentdir = option.text == '..';
-                if(samedir)
-                    this.refresh();
-                else
-                    // TODO: open .. does not open a single tex file for some reason? go to cv/texmf and then ..
-                    this.commands(parentdir ? and(cmd('open', '..'), cmd('cd', '..')) : and(cmd('cd', arg(option.value)), cmd('open', '.')));
-            }
-        };
+        this.ui.filetree.ondblclick = ev => this.filetree_open_onclick(ev);
         
         //TODO: clicking on rename twice should make the box disappear
         this.ui.rename.onclick = () => this.rename_onclick();
@@ -217,6 +205,21 @@ export class Shell
         
         this.ui.status.ondblclick = () => this.commands(cmd('open', this.log_small_sink_path)); 
     }
+
+    filetree_open_onclick(ev)
+    {
+        const {arg, cmd, and} = this;
+        const option = ev.target; 
+        if(this.ui.isdir(option))
+        {
+            const samedir = option.text == '.', parentdir = option.text == '..';
+            if(samedir)
+                this.refresh();
+            else
+                // TODO: open .. does not open a single tex file for some reason? go to cv/texmf and then ..
+                this.commands(parentdir ? and(cmd('open', '..'), cmd('cd', '..')) : and(cmd('cd', arg(option.value)), cmd('open', '.')));
+        }
+    };
 
     share_onclick()
     {
@@ -1043,10 +1046,6 @@ export class Shell
             this.busytex_applet_versions = initialized;
             this.ui.update_busytex_applet_versions(this.busytex_applet_versions);
         }
-        if(logs)
-        {
-            console.log('LOGS', logs);
-        }
         if(pdf)
         {
             this.toc();
@@ -1081,7 +1080,7 @@ export class Shell
         if(!cwd)
             cwd = this.ui.get_current_tex_path() ? this.PATH.dirname(this.ui.get_current_tex_path()) : curdir;
 
-        console.log('curdir', curdir, 'cwd', cwd, this.home_dir);
+        console.log('project_dir', 'curdir', curdir, 'cwd', cwd, this.home_dir);
 
         if(!cwd || !cwd.startsWith(this.home_dir) || cwd == this.home_dir || !curdir.startsWith(cwd))
             return null;
@@ -1094,7 +1093,7 @@ export class Shell
         return this.project_dir().replace(this.home_dir, this.tmp_dir);
     }
 
-    open_find_default_path(file_path)
+    find_default_path(file_path)
     {
         const tex_files = this.find(file_path, '', false).filter(f => f.contents != null && f.path.endsWith(this.tex_ext));
         let default_path = null;
@@ -1246,7 +1245,7 @@ export class Shell
             {
                 const abspath = this.abspath(file_path);
                 const basename = this.PATH.basename(abspath);
-                const default_path = (file_path == '.' || file_path == '..') ? this.open_find_default_path(file_path) : null;
+                const default_path = (file_path == '.' || file_path == '..') ? this.find_default_path(file_path) : null;
                 // open selected project tex path instead of default?
                 
                 contents = null;
