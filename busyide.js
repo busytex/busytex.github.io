@@ -53,7 +53,7 @@ export class Shell
         this.text_extensions = ['.tex', '.bib', '.sty', '.bst', '.bbl', '.txt', '.md', '.svg', '.sh', '.py', '.csv', '.tsv', '.eps', '.xml', '.json', '.md', '.r', '.c', '.cpp', '.h', '.js', '.html'];
         this.search_extensions = ['', '.tex', '.bib', '.sty', '.txt', '.md', '.sh', '.py', '.xml', '.json', '.md', '.r', '.c', '.cpp', '.h', '.js', '.html'];
         this.busybox_applets = ['busyz', 'bsddiff3prog', 'bsddiff', 'busybox', 'find', 'mkdir', 'pwd', 'ls', 'echo', 'cp', 'rm', 'du', 'tar', 'touch', 'wc', 'cat', 'head', 'clear', 'gzip', 'base64', 'sha1sum', 'whoami', 'sed', 'true', 'false', 'seq', 'patch', 'grep', 'test', 'xxd', 'xz', 'hexdump', 'unxz', 'mv'];
-        this.shell_builtins =  ['cd', 'rename', 'man', 'help', 'open', 'close', 'download', 'purge', 'latexmk', 'git', 'upload', 'wget', 'init', 'dirty', 'hub', 'rgrep', 'tlmgr'];
+        this.shell_builtins =  ['cd', 'rename', 'man', 'help', 'open', 'close', 'download', 'purge', 'latexmk', 'git', 'upload', 'curl', 'init', 'dirty', 'hub', 'rgrep', 'tlmgr'];
         this.cache_applets = ['object', 'token'];
         this.git_applets = ['clone', 'pull', 'push', 'status', 'difftool', 'diff', 'fetch', 'checkout'];
         this.hub_applets = ['release'];
@@ -196,7 +196,7 @@ export class Shell
 		this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyMod.Shift | this.monaco.KeyCode.Enter, this.ui.compile_current_file.onclick);
 		this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyMod.Shift | this.monaco.KeyCode.KEY_F, () => this.ui.search_query.focus());
 		this.difftool.addCommand(this.monaco.KeyCode.Escape, () => this.ui.toggle_editor('editor'), '!findWidgetVisible && !inReferenceSearchEditor && !editorHasSelection'); 
-        this.ui.filetree.onkeydown = ev => (ev.key == 'Enter' || ev.key == ' ') ? this.ui.filetree.ondblclick({target: this.ui.filetree.options[this.ui.filetree.selectedIndex]}) : ev.key == 'Delete' ? this.ui.remove.onclick() : null;
+        this.ui.filetree.onkeydown = ev => (ev.key == 'Enter' || ev.key == ' ') ? this.ui.filetree.ondblclick({target: this.ui.filetree.selectedOptions[0]}) : ev.key == 'Delete' ? this.ui.remove.onclick() : null;
         
         this.ui.status.ondblclick = () => this.commands(cmd('open', this.log_small_sink_path)); 
     }
@@ -580,10 +580,9 @@ export class Shell
         return fetch(this.cors_proxy_fmt.replace('${url}', url), opts);
     }
 
-    async wget(url, _OP = '-O', output_path = null)
+    async curl(url, _o = '-o', output_path = null, __compressed = null)
     {
-        //TODO: replace by curl +- compressed?
-        output_path = _OP == '-P' ? this.PATH.join(output_path, this.PATH.basename(url)) : (output_path || this.PATH.basename(url));
+        output_path = output_path || this.PATH.basename(url);
         const resp = await this.fetch_via_cors_proxy(url);
 
         if(resp.status != this.HTTP_OK)
@@ -637,29 +636,39 @@ export class Shell
                 route0 = 'file';
 
             else if(this.github.hosts.includes(url.host))
-                route0 = 'github';
+                route0 = 'github.com';
             
             else if('arxiv.org' == url.host)
-                route0 = 'arxiv';
+                route0 = 'arxiv.org';
             
             else if('data:' == url.protocol && url.pathname.startsWith(this.data_uri_prefix_tar_gz.slice('data:'.length)))
                 [route0, route1] = [this.data_uri_prefix_tar_gz, route1.slice(this.data_uri_prefix_tar_gz.length)];
         }
        
-        if(route0 == 'github')
+        if(route0 == 'github.com')
         {
             const parsed = this.github.parse_url(route1);
             const project_dir = parsed.reponame;
             [this.ui.github_https_path.value, this.ui.github_branch.value] = [parsed.path, parsed.branch];
-            const cmds = [this.cmd('git', 'clone', this.ui.github_https_path.value, ...(parsed.branch ? ['--branch', parsed.branch] : [])), this.cmd('cd', project_dir), this.cmd('open', '.')];
+            const cmds = [
+                this.cmd('git', 'clone', this.ui.github_https_path.value, ...(parsed.branch ? ['--branch', parsed.branch] : [])), 
+                this.cmd('cd', project_dir), 
+                this.cmd('open', '.')
+            ];
             await this.commands(this.and(...cmds));
         }
-        if(route0 == 'arxiv')
+        if(route0 == 'arxiv.org')
         {
             const arxiv_https_path = route1.replace('/abs/', '/e-print/');
             const project_dir = this.PATH.join('~', this.PATH.basename(arxiv_https_path));
-            // TODO: wget -U busytex, real wget does not gzip-decompress, chrome does https://superuser.com/questions/940605/chromium-prevent-unpacking-tar-gz
-            const cmds = [this.cmd('wget', arxiv_https_path, '-O', this.arxiv_path), this.cmd('mkdir', project_dir), this.cmd('tar', '-xf', this.arxiv_path, '-C', project_dir), this.cmd('cd', project_dir), this.cmd('open', '.')];
+            // TODO: curl -U busytex, real curl does not gzip-decompress, chrome does https://superuser.com/questions/940605/chromium-prevent-unpacking-tar-gz
+            const cmds = [
+                this.cmd('curl', arxiv_https_path, '-o', this.arxiv_path, '--compressed'), 
+                this.cmd('mkdir', project_dir), 
+                this.cmd('tar', '-xf', this.arxiv_path, '-C', project_dir), 
+                this.cmd('cd', project_dir), 
+                this.cmd('open', '.')
+            ];
             
             this.log_big(`Opening project from arxiv [${route1}]...`);
 
@@ -677,7 +686,7 @@ export class Shell
             if(this.exists(file_https_path))
                 file_path = file_https_path;
             else
-                download_cmds = [this.cmd('wget', this.arg(file_https_path), '-O', this.arg(file_path))]
+                download_cmds = [this.cmd('curl', this.arg(file_https_path), '-o', this.arg(file_path))]
 
             this.rm_rf(this.tmp_decompressed);
             this.mkdir_p(this.tmp_decompressed);
@@ -706,7 +715,11 @@ export class Shell
             const src_path = this.strip_components(this.tmp_decompressed);
 
             const project_dir = this.PATH.join('~', (src_path && src_path != this.tmp_decompressed) ? this.PATH.basename(src_path) : basename_noext);
-            const cmds2 = [this.cmd('rename', this.arg(src_path), this.arg(project_dir)), this.cmd('cd', this.arg(project_dir)), this.cmd('open', '.')];
+            const cmds2 = [
+                this.cmd('rename', this.arg(src_path), this.arg(project_dir)), 
+                this.cmd('cd', this.arg(project_dir)), 
+                this.cmd('open', '.')
+            ];
             await this.commands(this.and(...cmds2));
         }
         if(route0 == 'file')
@@ -717,13 +730,26 @@ export class Shell
             const project_dir = this.PATH.join('~', basename.slice(0, basename.indexOf('.')));
             
             this.log_big(`Opening project from file [${route1}]...`);
-            const cmds = [this.cmd('mkdir', this.arg(project_dir)), path.startsWith('http://') || path.startsWith('https://') ? this.cmd('wget', this.arg(path), '-P', this.arg(project_dir)) : this.cmd('cp', this.arg(path), this.arg(project_dir)), this.cmd('cd', this.arg(project_dir)), this.cmd('open', '.')];
+            const cmds = [
+                this.cmd('mkdir', this.arg(project_dir)), 
+                path.startsWith('http://') || path.startsWith('https://') ? this.cmd('curl', this.arg(path), '-o', this.arg(this.PATH.join(project_dir, this.PATH.basename(path))) ) : this.cmd('cp', this.arg(path), this.arg(project_dir)), 
+                this.cmd('cd', this.arg(project_dir)), 
+                this.cmd('open', '.')
+            ];
             await this.commands(this.and(...cmds));
         }
         if(route0 == this.data_uri_prefix_tar_gz)
         {
             this.log_big(`Opening project from data URI (*.tar.gz)...`);
-            const cmds = [this.cmd('echo', '$@', '>', this.share_link_log), this.cmd('sed', '-i', '-e', this.qq(`s#${this.data_uri_prefix_tar_gz}##`), this.share_link_log), this.cmd('base64', '-d', this.share_link_log, '>', this.shared_project_targz), this.cmd('gzip', '-d', this.shared_project_targz), 'cd', this.cmd('tar', '-xf', this.shared_project_tar), this.cmd('open', '.')];
+            const cmds = [
+                this.cmd('echo', '$@', '>', this.share_link_log), 
+                this.cmd('sed', '-i', '-e', this.qq(`s#${this.data_uri_prefix_tar_gz}##`), this.share_link_log), 
+                this.cmd('base64', '-d', this.share_link_log, '>', this.shared_project_targz), 
+                this.cmd('gzip', '-d', this.shared_project_targz), 
+                'cd', 
+                this.cmd('tar', '-xf', this.shared_project_tar), 
+                this.cmd('open', '.')
+            ];
             //TODO: open single subdirectory? or single non-readme
             await this.commands(this.and(...cmds));
         }
@@ -1093,7 +1119,7 @@ export class Shell
         return this.project_dir().replace(this.home_dir, this.tmp_dir);
     }
 
-    find_default_path(file_path)
+    find_default_basename(file_path)
     {
         const tex_files = this.find(file_path, '', false).filter(f => f.contents != null && f.path.endsWith(this.tex_ext));
         let default_path = null;
@@ -1244,7 +1270,7 @@ export class Shell
             {
                 const abspath = this.abspath(file_path);
                 const basename = this.PATH.basename(abspath);
-                const default_path = (file_path == '.' || file_path == '..') ? this.find_default_path(file_path) : null;
+                const default_path = (file_path == '.' || file_path == '..') ? this.find_default_basename(file_path) : null;
                 // open selected project tex path instead of default?
                 
                 contents = null;
@@ -1374,7 +1400,7 @@ export class Shell
         this.mkdir_p(texmf_dist);
 
         //TODO: deletes with OR
-        const cmds = [this.cmd('wget', https_path, '-O', this.tar_xz_path), this.cmd('unxz', this.tar_xz_path), this.cmd('tar', '-xf', this.tar_path, '-C', texmf_dist), this.cmd('find', this.arg(texmf_dist), '-name', this.qq('*.pdf'), '-delete'), this.cmd('rm', '-rf', this.arg(this.PATH.join(texmf_dist, 'tlpkg')))];
+        const cmds = [this.cmd('curl', https_path, '-o', this.tar_xz_path), this.cmd('unxz', this.tar_xz_path), this.cmd('tar', '-xf', this.tar_path, '-C', texmf_dist), this.cmd('find', this.arg(texmf_dist), '-name', this.qq('*.pdf'), '-delete'), this.cmd('rm', '-rf', this.arg(this.PATH.join(texmf_dist, 'tlpkg')))];
         this.log_big(`[${this.tar_xz_path}] <CORS- [${https_path}]...`);
         await this.commands(this.and(...cmds));
         this.log_big(`[${this.tar_xz_path}] -> [${texmf_dist}]...`);
