@@ -1,5 +1,7 @@
 name: deploy
 
+# ubuntu-texlive-fonts-recommended.js ubuntu-texlive-fonts-recommended.data
+
 env:
     BUSYTEX_RELEASES_URL: https://github.com/busytex/busytex/releases
     BUSYTEX_FILES: busytex_pipeline.js busytex_worker.js
