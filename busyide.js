@@ -924,6 +924,7 @@ export class Shell
         }
         await this.cache_save();
 
+        // TODO: provide a progress hook to call cache_save and preserve progress in case of some errors
         const exit_code = await this.github.clone(this.log_big.bind(this), token, https_path, repo_path);
         if(exit_code === false)
         {
@@ -1128,6 +1129,7 @@ export class Shell
 
     find_default_basename(file_path)
     {
+        // TODO: also consider tex files with names matching project name or directory name
         const tex_files = this.find(file_path, '', false).filter(f => f.contents != null && f.path.endsWith(this.tex_ext));
         let default_path = null;
         if(tex_files.length == 1)
