@@ -4,7 +4,7 @@ env:
     BUSYTEX_RELEASES_URL: https://github.com/busytex/busytex/releases
     BUSYTEX_FILES: busytex_pipeline.js busytex_worker.js
     BUSYTEX_ASSETS_CORE: versions.txt busytex.wasm busytex.js texlive-basic.js texlive-basic.data
-    BUSYTEX_ASSETS_UBUNTU: ubuntu-texlive-latex-base.data ubuntu-texlive-latex-base.js ubuntu-texlive-latex-extra.data ubuntu-texlive-latex-extra.js ubuntu-texlive-latex-recommended.data ubuntu-texlive-latex-recommended.js ubuntu-texlive-science.js ubuntu-texlive-science.data ubuntu-texlive-fonts-recommended.js ubuntu-texlive-fonts-recommended.data
+    BUSYTEX_ASSETS_UBUNTU: ubuntu-texlive-base.data ubuntu-texlive-base.js ubuntu-texlive-latex-base.data ubuntu-texlive-latex-base.js ubuntu-texlive-latex-extra.data ubuntu-texlive-latex-extra.js ubuntu-texlive-latex-recommended.data ubuntu-texlive-latex-recommended.js ubuntu-texlive-science.js ubuntu-texlive-science.data ubuntu-texlive-fonts-recommended.js ubuntu-texlive-fonts-recommended.data
     BUSYIDE_RELEASES_URL: https://github.com/busytex/busyide/releases
     BUSYIDE_ASSETS: busybox_unstripped.js busybox_unstripped.wasm
     BUSYIDE_FILES: versions.txt README.tex busybox.js busyide.js github.js index.html logo.png
