@@ -15,7 +15,7 @@ on:
       busytexreleasetag:
         description: 'busytex WASM release tag for core and ubuntu assets'
         required: true
-        default: 'build_8813bb75bc7075c248d2af305290a0a98efe43e6'
+        default: 'build_2c17ccace792001e8fc5daa8821f55e5dceb1fa0'
         
       busytexref:
         description: 'busytex git ref'
