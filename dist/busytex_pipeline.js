@@ -613,8 +613,6 @@ class BusytexPipeline
             log = this.read_all_text(FS, cmd_log_path);
             exit_code = stdout.trim() ? (error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
             
-            this.print('$ # XDV_PATH ' + this.read_all_bytes(FS, xdv_path).length);
-            
             logs.push({
                 cmd : cmd.join(' '), 
                 texmflog    : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.texmflog) : '',
@@ -629,6 +627,8 @@ class BusytexPipeline
             if(exit_code != 0)
                 break;
         }
+
+        console.log('LOGS', logs);
 
         const pdf = exit_code == 0 ? this.read_all_bytes(FS, pdf_path) : null;
         const logcat = logs.map(({cmd, texmflog, missfontlog, log, exit_code, stdout, stderr}) => ([`$ ${cmd}`, `EXITCODE: ${exit_code}`, '', 'TEXMFLOG:', texmflog, '==', 'MISSFONTLOG:', missfontlog, '==', 'LOG:', log, '==', 'STDOUT:', stdout, '==', 'STDERR:', stderr, '======'].join('\n'))).join('\n\n');
